@@ -1,0 +1,49 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  tags?: string[];
+  href?: string;
+  image?: string;
+}
+
+const { title, description, tags = [], href, image } = Astro.props;
+---
+
+<article class="group relative border border-zinc-800 rounded-lg overflow-hidden bg-zinc-900 hover:border-zinc-700 transition-colors">
+  {image && (
+    <div class="aspect-video bg-zinc-800 overflow-hidden">
+      <img
+        src={image}
+        alt={title}
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      />
+    </div>
+  )}
+
+  <div class="p-6">
+    <h3 class="text-lg font-semibold text-zinc-50 group-hover:text-blue-500 transition-colors">
+      {href ? (
+        <a href={href} class="after:absolute after:inset-0">
+          {title}
+        </a>
+      ) : (
+        title
+      )}
+    </h3>
+
+    <p class="mt-2 text-sm text-zinc-400 line-clamp-2">
+      {description}
+    </p>
+
+    {tags.length > 0 && (
+      <div class="mt-4 flex flex-wrap gap-2">
+        {tags.map(tag => (
+          <span class="px-2 py-1 text-xs font-medium text-zinc-500 bg-zinc-800 rounded">
+            {tag}
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+</article>

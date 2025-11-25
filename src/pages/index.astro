@@ -1,0 +1,106 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import BlogCard from '../components/BlogCard.astro';
+
+const featuredProjects = [
+  {
+    title: 'Project One',
+    description: 'A brief description of what this project does and the problems it solves.',
+    tags: ['TypeScript', 'React', 'Node.js'],
+    href: '/projects/project-one',
+  },
+  {
+    title: 'Project Two',
+    description: 'Another cool project showcasing different skills and technologies.',
+    tags: ['Rust', 'WebAssembly'],
+    href: '/projects/project-two',
+  },
+  {
+    title: 'Project Three',
+    description: 'Something interesting built with modern tools and best practices.',
+    tags: ['Go', 'Docker', 'Kubernetes'],
+    href: '/projects/project-three',
+  },
+];
+
+const recentPosts = [
+  {
+    title: 'Building Better CLI Tools',
+    description: 'Lessons learned from building command-line tools that developers actually want to use.',
+    date: new Date('2024-11-20'),
+    href: '/blog/building-better-cli-tools',
+    readingTime: '5 min read',
+  },
+  {
+    title: 'On Writing Clean Code',
+    description: 'Practical tips for writing code that your future self will thank you for.',
+    date: new Date('2024-11-15'),
+    href: '/blog/on-writing-clean-code',
+    readingTime: '8 min read',
+  },
+  {
+    title: 'The Case for Simplicity',
+    description: 'Why simpler solutions often outperform complex architectures.',
+    date: new Date('2024-11-10'),
+    href: '/blog/the-case-for-simplicity',
+    readingTime: '4 min read',
+  },
+];
+---
+
+<Base title="pmoxim">
+  <!-- Hero Section -->
+  <section class="max-w-4xl mx-auto px-6 py-16">
+    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight">
+      Hey, I'm <span class="text-blue-500">pmoxim</span>
+    </h1>
+    <p class="mt-6 text-xl text-zinc-400 max-w-2xl">
+      I build things for the web. Currently focused on developer tools and infrastructure.
+    </p>
+    <div class="mt-8 flex items-center gap-4">
+      <a
+        href="/projects"
+        class="px-5 py-2.5 bg-blue-600 text-zinc-50 font-medium rounded-lg hover:bg-blue-500 transition-colors"
+      >
+        View Projects
+      </a>
+      <a
+        href="/blog"
+        class="px-5 py-2.5 border border-zinc-700 text-zinc-400 font-medium rounded-lg hover:border-zinc-600 hover:text-zinc-50 transition-colors"
+      >
+        Read Blog
+      </a>
+    </div>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="max-w-4xl mx-auto px-6 py-16">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-semibold">Featured Projects</h2>
+      <a href="/projects" class="text-sm text-zinc-400 hover:text-blue-500 transition-colors">
+        View all &rarr;
+      </a>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {featuredProjects.map(project => (
+        <ProjectCard {...project} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Recent Posts -->
+  <section class="max-w-4xl mx-auto px-6 py-16">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-semibold">Recent Writing</h2>
+      <a href="/blog" class="text-sm text-zinc-400 hover:text-blue-500 transition-colors">
+        View all &rarr;
+      </a>
+    </div>
+    <div class="divide-y divide-zinc-800">
+      {recentPosts.map(post => (
+        <BlogCard {...post} />
+      ))}
+    </div>
+  </section>
+</Base>

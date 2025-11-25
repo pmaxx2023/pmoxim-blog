@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+const projects = [
+  {
+    title: 'Project One',
+    description: 'A brief description of what this project does and the problems it solves. Built with modern tools and best practices.',
+    tags: ['TypeScript', 'React', 'Node.js'],
+    href: '/projects/project-one',
+  },
+  {
+    title: 'Project Two',
+    description: 'Another cool project showcasing different skills and technologies. High-performance computing at its finest.',
+    tags: ['Rust', 'WebAssembly'],
+    href: '/projects/project-two',
+  },
+  {
+    title: 'Project Three',
+    description: 'Something interesting built with modern tools and best practices. Cloud-native from the ground up.',
+    tags: ['Go', 'Docker', 'Kubernetes'],
+    href: '/projects/project-three',
+  },
+  {
+    title: 'Project Four',
+    description: 'A machine learning project that demonstrates practical AI applications in everyday scenarios.',
+    tags: ['Python', 'PyTorch', 'FastAPI'],
+    href: '/projects/project-four',
+  },
+  {
+    title: 'Project Five',
+    description: 'Mobile-first application with a focus on user experience and performance optimization.',
+    tags: ['React Native', 'TypeScript'],
+    href: '/projects/project-five',
+  },
+  {
+    title: 'Project Six',
+    description: 'Open source contribution to a popular developer tool, improving its core functionality.',
+    tags: ['Open Source', 'CLI', 'Node.js'],
+    href: '/projects/project-six',
+  },
+];
+---
+
+<Base title="Projects | pmoxim" description="A collection of projects I've built.">
+  <section class="max-w-4xl mx-auto px-6">
+    <header class="mb-12">
+      <h1 class="text-4xl font-bold tracking-tight">Projects</h1>
+      <p class="mt-4 text-lg text-zinc-400">
+        A collection of things I've built. Some for work, some for fun, all with care.
+      </p>
+    </header>
+
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map(project => (
+        <ProjectCard {...project} />
+      ))}
+    </div>
+  </section>
+</Base>

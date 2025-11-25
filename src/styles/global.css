@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/* =============================================================================
+   Base Styles - Minimal Dark Theme
+   ============================================================================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #fafafa;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =============================================================================
+   Typography
+   ============================================================================= */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: #fafafa;
+}
+
+code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.9em;
+  background-color: #1a1a1a;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+}
+
+pre {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  background-color: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  border: 1px solid #27272a;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* =============================================================================
+   Prose (Blog Content)
+   ============================================================================= */
+
+.prose {
+  max-width: 65ch;
+}
+
+.prose h2 {
+  margin-top: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose h3 {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.prose p {
+  margin-bottom: 1.5rem;
+  color: #a1a1aa;
+}
+
+.prose ul, .prose ol {
+  margin-bottom: 1.5rem;
+  padding-left: 2rem;
+  color: #a1a1aa;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+}
+
+.prose blockquote {
+  border-left: 3px solid #3b82f6;
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  color: #a1a1aa;
+  font-style: italic;
+}
+
+.prose img {
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid #27272a;
+  margin: 4rem 0;
+}
+
+.prose strong {
+  color: #fafafa;
+}
+
+/* =============================================================================
+   Selection & Scrollbar
+   ============================================================================= */
+
+::selection {
+  background-color: #3b82f6;
+  color: #fafafa;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
