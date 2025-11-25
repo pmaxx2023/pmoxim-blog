@@ -1,0 +1,117 @@
+---
+title: "How I'm Thinking About Prior Authorization Compression"
+description: The future of prior auth isn't incremental improvement. It's compression—from 18 manual steps to 4 automated ones.
+date: 2024-11-24
+tags: ['healthcare', 'strategy', 'leadership']
+---
+
+I'm currently leading the implementation of CMS-0057-F at a major national payer. This is the federal mandate requiring prior authorization burden reduction through FHIR interoperability—CRD, DTR, and PAS—operational by January 2027.
+
+It's 7+ product teams. 100+ people. A hard federal deadline. And a system that's been broken for decades.
+
+Here's how I'm thinking about it.
+
+## The Problem Isn't Efficiency. It's Architecture.
+
+Today's prior authorization workflow is an 18-step manual marathon:
+
+1. Auth required?
+2. Check payer portal
+3. Find policy docs
+4. Call payer (hold)
+5. Find the right form
+6. Look up MCG criteria
+7. Manual data entry
+8. Pull clinicals from EHR
+9. Nurse review
+10. Fax 24 pages
+11. Portal upload
+12. Attach docs
+13. Wait 3-5 days
+14. Get denial (Code 252)
+15. P2P required
+16. Mail letter
+17. Resubmit
+18. Start over
+
+Each step is a manual intervention. Each intervention is a failure point. The system breaks everywhere.
+
+The true cost: **3-5 days** average turnaround. **45 minutes** of skilled clinical and administrative time per case. Care delayed. Uncertainty extended.
+
+Most organizations try to optimize within this chaos. Faster faxing. Better portal UX. More efficient forms.
+
+That's the wrong frame.
+
+## The Future Isn't Improvement. It's Compression.
+
+You can't fix an 18-step workflow by making each step 10% faster. You fix it by eliminating 14 of the steps entirely.
+
+That's what CMS-0057-F enables—if you architect it right.
+
+The compressed workflow has four steps:
+
+**Step 1: Coverage Check (CRD)**
+At the moment an order is placed, the system queries the payer: Is auth required? What are the exact policy requirements? No portal. No phone call. No hunting for docs. The answer comes back instantly.
+
+**Step 2: Smart Form (DTR)**
+A dynamic questionnaire is generated using the payer's rules and automatically populated with data from the EHR. No manual entry. No pulling clinicals. The right questions, pre-filled with the right answers.
+
+**Step 3: Digital Submit (PAS)**
+The completed form and all clinical attachments are bundled into a standard FHIR format and submitted directly. No fax. No scanning. No portal upload. A complete, auditable package sent in seconds.
+
+**Step 4: Real-Time Response**
+The 3-5 day wait compresses into seconds. The response comes back as a standard transaction: Approved (proceed with care), Pended (here's exactly what's missing), or Denied (here's exactly why, with actionable next steps).
+
+From 18 manual steps to 4 automated ones. From 45 minutes to oversight only. From 3-5 days to real-time.
+
+## How I'm Thinking About the Implementation
+
+Leading this across 7+ teams and 100+ people, here's what I've learned:
+
+**Start with the destination, not the roadmap.**
+
+I wrote down the end-state in plain language before we built anything: "No prior auth ever goes through fax, portal, or one-off channels. Everything is intercepted and normalized through standards. Manual detours die."
+
+That's the private north star. Every decision filters through it.
+
+**Compliance is the catalyst, not the ceiling.**
+
+CMS-0057-F is a mandate. But it's also leverage. The regulation forces doors open that "good ideas" never could. Budget unlocks. Architecture decisions accelerate. Legacy system owners who'd block for years suddenly have to engage.
+
+I call this Regulatory Judo—using the weight of mandates to enable changes you wanted to make anyway.
+
+**The system breaks at every manual intervention.**
+
+Every time a human has to touch the workflow—find a form, pull a clinical, upload a doc—that's where errors happen. That's where delays accumulate. That's where the 3-5 days comes from.
+
+The goal isn't to make manual work faster. It's to eliminate the need for manual work.
+
+**Compress the proof, not just the process.**
+
+The old workflow required humans to assemble proof of medical necessity across scattered systems. The new workflow assembles it automatically, at the point of order, using data that already exists in the EHR.
+
+The insight: most of the information needed for authorization already exists. It's just not connected. CRD/DTR/PAS creates the connection.
+
+**Build for the standards, not the vendors.**
+
+FHIR, X12 278, HL7—these are the universal languages. Build to the standard, and you're interoperable with anyone. Build to a vendor's proprietary spec, and you're locked in forever.
+
+The architecture should outlast any single vendor relationship.
+
+## Where We Are Now
+
+We're deep in implementation. Some components are live. Others are in build. The January 2027 deadline is fixed; the path to get there requires constant navigation—technical, political, organizational.
+
+What I know for certain: the organizations that treat CMS-0057-F as a compliance checkbox will build the minimum. The organizations that treat it as an architecture opportunity will build something that transforms how care gets delivered.
+
+I'm building for the latter.
+
+---
+
+The daily chaos of prior authorization has persisted for decades because everyone optimized locally. Faster fax machines. Better portals. More efficient workarounds.
+
+The compression model is different. It doesn't optimize the chaos. It eliminates the need for it.
+
+18 steps become 4. Days become seconds. And clinical staff go back to doing what they were trained for—caring for patients, not navigating administrative labyrinths.
+
+That's the future I'm building toward.
