@@ -1,0 +1,141 @@
+---
+title: "Corn vs Dumplings: The Hidden Architecture of Everything That Works"
+description: You're not building platforms. You're building burrito bars.
+date: 2024-11-25
+tags: ['architecture', 'product', 'frameworks']
+---
+
+## The Setup: A Burrito, a Book, and a Moment
+
+In 2009, I read *Software Product Lines: Practices and Patterns* by Paul Clements and Linda Northrop. It was a book about modularity, reuse, and system structure—about building software not as isolated projects, but as product lines with shared assets and preplanned variability.
+
+Reading it, I had one of those rare moments where you have to put the book down and just breathe. The ideas weren't hard. They were just true.
+
+Yes, the book is older. The tooling is dated. But the thinking? Still lethal. Especially now, when AI makes everything feel infinite, the idea of designing for controlled composability matters more than ever.
+
+A few days later, I walked into Moe's Southwest Grill—the burrito bar chain. And suddenly, I saw it:
+
+This wasn't food. This was an interface contract in physical form.
+
+## Burrito Bar Grammar
+
+This isn't a metaphor stretched too far. Moe's operates on a compositional contract—a real-world, observable system of modular integration.
+
+You walk the line and select ingredients:
+
+- A wrapper: tortilla, bowl, taco shell
+- A protein: chicken, beef, tofu
+- Composables: beans, rice, corn, salsa, cheese, guac
+
+You're not just making a meal. You're composing a system. And like any well-structured system, there's a grammar: components that layer, bind, and produce coherent outcomes—and others that simply don't fit.
+
+Over time, I've watched Moe's adapt its lineup in ways that reveal its internal grammar:
+
+For years, they offered only tortillas and taco shells. The later introduction of bowls expanded the "wrapper" class—adding flexibility while staying within the domain.
+
+More recently, new sauces like guac-ranch and smoky chipotle began appearing, enriching the "finisher" category and leaning into the modularity of the salsa bar.
+
+I realized I could predict what Moe's might add next based on gaps in its component model. Would they add feta? Possibly. Kimchi? Probably not. Dumplings? Never.
+
+Would you add a dumpling to your burrito? No. Not because dumplings are bad. But because they violate the domain model.
+
+## Beans Are Glue
+
+Beans don't just fill space. They bind.
+
+In a burrito, they hold the protein to the wrapper. They add cohesion without adding control.
+
+That's just-enough-glue. You don't need orchestration engines or microservice registries to hold things together. You need components that inherently work together because they share the same assumptions.
+
+The glue isn't the feature. The ability to glue is the feature.
+
+Maybe the real killer feature is the ability to: (1) identify glue-able components, (2) create a universe where components can be glued or left out—and it doesn't break the universe.
+
+You can glue corn. You can glue tomatoes. But dumplings resist integration. They're self-contained, inert, complete. That's why they break the burrito bar model.
+
+## Dumplings Are a Type Violation
+
+Dumplings are amazing. Just not in a burrito.
+
+In systems design, we fall in love with our dumplings all the time:
+
+- That clever tool that doesn't fit our stack
+- That cool microservice that doesn't follow data conventions
+- That beautifully designed feature no other component knows how to talk to
+
+The dumpling isn't bad. It's just not valid in this grammar.
+
+## Why This Shows Up Everywhere
+
+Once you see the pattern, you can't unsee it.
+
+**M&A that fails:**
+
+You acquire a company expecting "synergy." What you get is dumplings. Their stack is Python, yours is Java. Their data model assumes NoSQL, you're Postgres. Their deployment is containerized, yours isn't.
+
+You bought dumplings expecting corn. The integration cost wasn't in the code—it was in the architectural mismatch.
+
+Companies that scale through acquisition? They build burrito bar architecture first. They define the wrapper (APIs, data contracts, deployment patterns), then only acquire components that fit the model.
+
+**Restaurants that don't scale:**
+
+Your favorite neighborhood bistro has 40 menu items, each requiring different prep, different timing, different plating. The chef is the system. When they leave, the restaurant dies. Dumpling architecture.
+
+Moe's has 700 locations. New employee training is simple: here are the proteins, here are the toppings, here's the order of operations. Burrito bar architecture.
+
+**Hiring that breaks:**
+
+You've worked with both types. The corn candidate learns your stack in a week, writes code that looks like everyone else's, uses your tooling. Fits immediately.
+
+The dumpling candidate is brilliant. Insists on writing everything in Rust when your company is TypeScript. Builds internal frameworks nobody else understands. Creates beautiful code that only they can maintain.
+
+The dumpling isn't less talented. They just don't fit the system you're running.
+
+**Band breakups, political coalitions, open source forks:**
+
+Same pattern. Someone insists on being a dumpling in a burrito bar system. The group either fractures or ejects them. Not because they're wrong, but because they don't fit the grammar everyone else is operating in.
+
+## The Core Distinction
+
+**Corn** = naturally composable. Works everywhere. Integrates easily. Enhances without dominating. Fits the grammar.
+
+**Dumplings** = self-contained and complete. Doesn't layer. Doesn't bind. Resists integration. Breaks the model.
+
+**Beans** = structural glue. Holds other components together. Adds cohesion without adding control. Makes composition possible.
+
+The brilliance isn't avoiding dumplings. It's knowing which architecture you're building and choosing components accordingly.
+
+## The Moe's Rule for Product Architecture
+
+When building anything—product, team, company, menu—ask:
+
+**What's my wrapper?**
+The container everything fits into: API layer, brand identity, company values.
+
+**What are my composables?**
+The swappable components: features, team members, ingredients.
+
+**What's trying to be a dumpling?**
+The thing that's great but doesn't fit: the brilliant feature nobody uses, the tool that requires special knowledge, the person everyone routes around.
+
+Good systems don't need governance. They need components designed to fit together from the start.
+
+## Why This Matters Now
+
+In 2009, this was just an interesting way to think about software architecture.
+
+In 2025, this is survival strategy.
+
+AI makes creating new things trivially cheap. Anyone can spin up features, products, services. The bottleneck isn't creation—it's integration.
+
+The companies that win won't have the best individual components. They'll have the best compositional architecture.
+
+They'll know what's corn (integrates with everything), what's beans (holds the system together), and what's dumplings (beautifully self-contained but doesn't fit the model).
+
+And they'll have the discipline to keep dumplings off the burrito bar, no matter how delicious they look.
+
+---
+
+You're not building platforms. You're building burrito bars.
+
+Let your ingredients fit the grammar. Let your beans do the binding. And keep your dumplings where they belong.
