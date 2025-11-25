@@ -1,50 +1,64 @@
 ---
 title: Ghost Raisins
-description: Why users keep expecting features you removed—and what to do about it.
+description: We're picking out raisins from desserts we stopped serving, for restaurants that closed, following regulations that expired.
 date: 2024-11-20
-tags: ['product', 'ux', 'frameworks']
+tags: ['product', 'legacy', 'frameworks']
 ---
 
-You bite into a cookie expecting raisins because the last one had them. But this cookie doesn't. Your brain still tastes them anyway—ghost raisins.
+My daughter hates raisins. Last week at her favorite restaurant, she ordered their famous cinnamon apple crumb cake. First bite stopped mid-chew. Raisin.
 
-This happens constantly in product development.
+I watched her spend 15 minutes performing surgery on that cake, picking out every raisin while her ice cream melted into soup. The family next to us ordered, ate, and left while she was still picking.
 
-## The Pattern
+When I asked the chef why they use raisins, he paused. "That's how my mentor taught me. Based on a British pudding recipe."
 
-You remove a feature, deprecate a workflow, or change a default. Users who experienced the old version keep expecting it. They click where the button used to be. They look for the setting that's gone. They file bugs about "missing" functionality that was intentionally removed.
+"Do you still serve British pudding?"
 
-The feature is gone, but its ghost lingers.
+"Haven't for fifteen years."
 
-## Why This Matters
+The raisins were ghosts—remnants from a dessert they don't even make anymore. But here's my daughter in 2025, picking out raisins that made sense in 1987.
 
-Ghost raisins aren't just user confusion—they're a signal about how habits form around your product. Every feature you ship creates an expectation. Every workflow becomes muscle memory. Every default becomes "how it works."
+Sound familiar?
 
-When you change these things, you're not just updating code. You're fighting against ingrained behavior.
+## The Requirements That Aren't
 
-I've watched users struggle with "improved" interfaces that moved three buttons. The new layout was objectively better—cleaner, more logical, faster. Didn't matter. Their hands knew where the old buttons lived. The ghost buttons were still there for them.
+Tomorrow I'm reviewing "requirements" for an important quality metrics reporting system. But they're not requirements—they're raisin-picking instructions:
 
-## What To Do About It
+- "Export to Excel to remove duplicates from Source B"
+- "Add flags for when date logic fails so we can manually correct"
+- "Build reconciliation reports for vendor file mismatches"
 
-**1. Deprecate loudly before removing quietly.**
+When you ask why these workarounds exist, you discover:
 
-If something's going away, warn people. Give them time to adjust. "This feature will be removed in 30 days" hurts less than "Where did it go?"
+**Legacy raisins:** We validate 17 fields from a 2008 federal mandate. The mandate ended. We still validate.
 
-**2. Leave breadcrumbs.**
+**Acquisition raisins:** Company X's data structure, inherited 2016. Sold Company X in 2020. Fields still mandatory.
 
-When users click where the old thing was, tell them where it moved. A tooltip that says "Looking for X? It's now in Settings > Advanced" costs you nothing and saves them frustration.
+**Compliance raisins:** Complex validation from a 2015 audit. Regulation changed 2018. Auditor left 2019. Validation remains.
 
-**3. Question every removal.**
+We're picking out raisins from desserts we stopped serving, for restaurants that closed, following regulations that expired, using systems we decommissioned.
 
-Before you delete something, ask: how many people have this in muscle memory? If it's a lot, the "cleanup" might cost more than the clutter.
+## The Real Cost
 
-**4. Watch the support tickets.**
+My team spends 72 days per year picking ghost raisins. Smart people doing archaeological excavation instead of innovation. While competitors who started fresh are shipping clean code.
 
-After any removal, track what people ask about. Ghost raisins show up in support queues before they show up in metrics.
+Worse—some teammates built careers on efficient raisin removal. They know every raisin's origin story. When you suggest eliminating raisins, you're not challenging process. You're challenging identity.
 
-## The Deeper Lesson
+"We've always included raisins." "They're there for a reason." (What reason? "There must have been one.")
 
-Products accumulate expectations like sediment. Each release deposits another layer of "how things work" into your users' brains. You can't see this sediment, but it's load-bearing.
+The question nobody asks: Which requirements are actually required? By whom? As of when?
 
-Redesigns fail when they ignore the sediment. You're not starting fresh—you're excavating.
+Instead we keep picking. It's safer than questioning why they're there.
 
-The next time you're about to remove something "nobody uses," check the sediment. Those ghost raisins might be holding up more than you think.
+## Tomorrow's Conversation
+
+"What if we designed our system without any raisins? Not 'how do we pick better' but 'what if there were zero raisins to pick?'"
+
+The new analyst will get it immediately. She doesn't have muscle memory for problems that predate her career. The veterans will struggle—some raisins are load-bearing in their mental models.
+
+That's okay.
+
+Sometimes the most powerful requirement isn't adding another workaround for a 2007 rule.
+
+Sometimes it's having the courage to say: "No raisins, please."
+
+The customer never wanted raisins. They just wanted cake.
