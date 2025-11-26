@@ -1,0 +1,147 @@
+---
+title: "The Box, The Calculator, The API"
+description: Container ships, ATMs, and prior auth APIs aren't different innovations. They're the same innovation—compression—applied to different domains.
+date: 2024-11-25
+tags: ['strategy', 'frameworks', 'healthcare']
+---
+
+In 1956, a trucking entrepreneur named Malcom McLean loaded 58 aluminum containers onto a converted oil tanker in Newark. The shipping industry laughed.
+
+Ships had worked the same way for centuries: longshoremen manually loading cargo piece by piece, item by item. A ship might spend more time in port being loaded than at sea. The inefficiency was baked into the system.
+
+McLean didn't try to make longshoremen faster. He didn't optimize the loading process. He compressed it.
+
+One container. Standard size. Lift it on, lift it off. What took days now took hours. What required armies of workers now required a crane operator.
+
+The industry called it impractical. Too rigid. Ships were designed for break-bulk cargo. Ports weren't equipped. Unions would never allow it.
+
+Within two decades, container shipping had transformed global trade. Not by improving the old system—by making it irrelevant.
+
+## The ATM Pattern
+
+In 1967, Barclays installed the world's first ATM in London. The banking industry was skeptical.
+
+Getting cash meant going to a bank during banking hours, waiting in line, presenting ID to a teller, filling out a withdrawal slip, waiting while the teller processed it, and walking out with your money. Six steps, minimum fifteen minutes, only available 40 hours a week.
+
+The ATM didn't make tellers faster. It didn't optimize the line. It compressed the transaction.
+
+Card, PIN, amount, cash. Four steps. Sixty seconds. Available 168 hours a week.
+
+Bankers said customers would never trust a machine with their money. They said the personal relationship with tellers was irreplaceable. They said fraud would be rampant.
+
+Today there are over 3 million ATMs worldwide. Not because they improved the old system—because they made most of it unnecessary.
+
+## The Pattern
+
+McLean and Barclays discovered the same thing:
+
+**You can't fix an 18-step process by making each step 10% faster. You fix it by eliminating 14 of the steps entirely.**
+
+That's compression. Not optimization within the existing structure—elimination of the structure itself.
+
+The shipping industry spent centuries optimizing how longshoremen loaded cargo. McLean asked: what if we didn't need longshoremen for most of it?
+
+Banking spent decades optimizing teller efficiency. Barclays asked: what if we didn't need tellers for most transactions?
+
+Compression always looks impractical from inside the existing system. The experts know all the reasons why the current process exists. They've spent careers mastering it. The suggestion that most of their expertise might become unnecessary isn't just threatening—it seems naive.
+
+But compression doesn't care about expertise in the old system. It cares about outcomes.
+
+## The Healthcare Compression
+
+I'm currently leading the implementation of CMS-0057-F at a major national payer—the federal mandate requiring prior authorization burden reduction through FHIR interoperability, operational by January 2027.
+
+Here's what today's prior authorization workflow looks like:
+
+1. Auth required?
+2. Check payer portal
+3. Find policy docs
+4. Call payer (hold)
+5. Find the right form
+6. Look up clinical criteria
+7. Manual data entry
+8. Pull clinicals from EHR
+9. Nurse review
+10. Fax 24 pages
+11. Portal upload
+12. Attach docs
+13. Wait 3-5 days
+14. Get denial
+15. P2P required
+16. Mail letter
+17. Resubmit
+18. Start over
+
+Eighteen steps. 45 minutes of skilled clinical and administrative time. 3-5 days average turnaround.
+
+Most organizations try to optimize within this chaos. Faster faxing. Better portal UX. More efficient forms.
+
+They're doing what shipping did before McLean. Optimizing the longshoremen instead of questioning whether you need them.
+
+The CMS-0057-F architecture enables something different:
+
+**Step 1: Coverage Check (CRD)**
+At the moment an order is placed, the system queries: auth required? What are the requirements? Answer comes back instantly.
+
+**Step 2: Smart Form (DTR)**
+A dynamic questionnaire generated from payer rules, auto-populated with EHR data. No manual entry. No pulling clinicals.
+
+**Step 3: Digital Submit (PAS)**
+FHIR bundle with all clinical attachments submitted directly. No fax. No portal. Complete package in seconds.
+
+**Step 4: Real-Time Response**
+Approved, pended, or denied—with exactly why—returned immediately.
+
+From 18 steps to 4. From 45 minutes to oversight only. From 3-5 days to real-time.
+
+That's not optimization. That's compression.
+
+## Why Compression Wins
+
+Container shipping didn't succeed because containers were better at carrying cargo than longshoremen. Longshoremen could handle odd-shaped items, make judgments about stacking, adapt to unusual situations.
+
+Containers succeeded because for 95% of cargo, none of that mattered. Standard boxes moving standard goods didn't need human judgment. They needed speed and reliability.
+
+ATMs didn't succeed because they were better at banking than tellers. Tellers could handle complex transactions, answer questions, build relationships.
+
+ATMs succeeded because for 80% of transactions, none of that mattered. Getting cash didn't need a relationship. It needed availability and speed.
+
+Prior auth compression won't succeed because APIs are better at clinical judgment than nurses. They're not.
+
+It will succeed because for the vast majority of authorizations, the information needed to make a decision already exists in the EHR. It just wasn't connected. The compression doesn't replace clinical judgment—it eliminates the manual assembly work that has nothing to do with judgment.
+
+## The Compression Test
+
+When evaluating any process improvement, ask:
+
+**Are you optimizing steps, or eliminating them?**
+
+If you're making each of 18 steps 10% faster, you'll get an 18-step process that's 10% faster. Still 18 steps. Still 18 failure points. Still fundamentally broken.
+
+If you're asking which steps don't need to exist at all, you're thinking about compression.
+
+**Are you building for the current system, or the outcome?**
+
+Shipping experts knew everything about break-bulk cargo. That expertise became irrelevant. Banking experts knew everything about teller operations. That expertise became irrelevant.
+
+The outcome—cargo moved, cash dispensed, care authorized—is what matters. The system that achieves it is just implementation.
+
+**Are the experts saying it won't work?**
+
+McLean heard it. Barclays heard it. I hear it weekly.
+
+This isn't a reliable signal that you're right. But it's not a signal that you're wrong either. Compression always looks impractical from inside the system being compressed.
+
+---
+
+The box, the calculator, the API.
+
+Different industries. Different decades. Different technologies.
+
+Same insight: You don't fix broken systems by optimizing them. You fix them by making most of the system unnecessary.
+
+Compression isn't a healthcare strategy or a logistics strategy or a banking strategy.
+
+It's *the* strategy. The one that actually transforms industries instead of incrementally improving them.
+
+The question isn't whether your industry will be compressed. It's whether you'll be the one doing the compressing—or the one being compressed.
