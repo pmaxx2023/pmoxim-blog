@@ -1,5 +1,4 @@
 ---
-import { STARTER_QUESTIONS } from '../../data/knowledge';
 ---
 
 <div id="chat-container" class="flex flex-col h-[600px] bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden">
@@ -21,22 +20,10 @@ import { STARTER_QUESTIONS } from '../../data/knowledge';
       </div>
       <div class="bg-zinc-800 rounded-lg px-4 py-3 max-w-[80%]">
         <p class="text-zinc-300">
-          Hey! I'm an AI trained on pmoxim's experience and product philosophy.
-          Ask me anything about my background, how I think about product, or what I'm looking for next.
+          Hey! I'm an AI trained on Peni's experience and product philosophy.
+          Ask me anything about my background, how I think about product, or what I'm working on.
         </p>
       </div>
-    </div>
-
-    <!-- Starter questions -->
-    <div id="starters" class="flex flex-wrap gap-2 mt-4">
-      {STARTER_QUESTIONS.map((q) => (
-        <button
-          class="starter-btn px-3 py-2 text-sm text-zinc-400 bg-zinc-800 hover:bg-zinc-700 hover:text-zinc-50 rounded-lg transition-colors text-left"
-          data-question={q}
-        >
-          {q}
-        </button>
-      ))}
     </div>
   </div>
 
@@ -69,20 +56,8 @@ import { STARTER_QUESTIONS } from '../../data/knowledge';
   const chatForm = document.getElementById('chat-form') as HTMLFormElement;
   const chatInput = document.getElementById('chat-input') as HTMLInputElement;
   const sendBtn = document.getElementById('send-btn') as HTMLButtonElement;
-  const startersContainer = document.getElementById('starters');
 
   let conversationHistory: Array<{role: string, content: string}> = [];
-
-  // Handle starter question clicks
-  document.querySelectorAll('.starter-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const question = (e.target as HTMLElement).dataset.question;
-      if (question) {
-        chatInput.value = question;
-        chatForm.dispatchEvent(new Event('submit'));
-      }
-    });
-  });
 
   // Add message to UI
   function addMessage(content: string, isUser: boolean) {
@@ -135,11 +110,6 @@ import { STARTER_QUESTIONS } from '../../data/knowledge';
     const message = chatInput.value.trim();
     if (!message) return;
 
-    // Hide starters after first message
-    if (startersContainer) {
-      startersContainer.style.display = 'none';
-    }
-
     // Add user message
     addMessage(message, true);
     conversationHistory.push({ role: 'user', content: message });
@@ -158,7 +128,7 @@ import { STARTER_QUESTIONS } from '../../data/knowledge';
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message,
-          history: conversationHistory.slice(-10) // Keep last 10 messages for context
+          history: conversationHistory.slice(-10)
         }),
       });
 

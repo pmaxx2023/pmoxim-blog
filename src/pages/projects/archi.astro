@@ -1,0 +1,255 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base title="Archi | AI Architecture Diagrams" description="Transform product descriptions into hand-drawn XPLANE-style architecture diagrams. AI-powered visual thinking for system design.">
+  <section class="max-w-4xl mx-auto px-6 pb-16">
+    <!-- Header -->
+    <header class="mb-12">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-4xl">🏗️</span>
+        <h1 class="text-4xl font-bold tracking-tight">Archi</h1>
+      </div>
+      <p class="text-xl text-zinc-400">
+        AI-powered architecture diagrams in hand-drawn XPLANE style
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="https://getarchi.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors">
+          Try Archi
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+        <a href="/projects" class="inline-flex items-center gap-2 px-4 py-2 border border-zinc-700 hover:border-zinc-600 text-zinc-300 rounded-lg font-medium transition-colors">
+          Back to Projects
+        </a>
+      </div>
+    </header>
+
+    <!-- Feature Grid -->
+    <div class="grid gap-8 md:grid-cols-2 mb-16">
+      <div class="feature-card">
+        <div class="feature-icon">✏️</div>
+        <h3 class="feature-title">XPLANE Visual Style</h3>
+        <p class="feature-desc">
+          Hand-drawn sketchy aesthetic inspired by XPLANE visual thinking. Bold linework, vibrant colors,
+          and friendly stick figures that make technical concepts approachable.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3 class="feature-title">AI-Powered Generation</h3>
+        <p class="feature-desc">
+          Describe your product or system in plain English. Archi uses Gemini to understand your architecture
+          and generate a visual diagram that captures the key components and relationships.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🏛️</div>
+        <h3 class="feature-title">Technical Architecture</h3>
+        <p class="feature-desc">
+          Show infrastructure layers, APIs, databases, and integrations. Archi understands tech stacks
+          and represents them with appropriate visual metaphors and labels.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3 class="feature-title">Instant Results</h3>
+        <p class="feature-desc">
+          No design skills required. Get a professional-looking architecture diagram in seconds.
+          Perfect for presentations, documentation, or just thinking through your system.
+        </p>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-8">How It Works</h2>
+      <div class="space-y-6">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3 class="step-title">Describe Your System</h3>
+            <p class="step-desc">Enter a product description, tech stack, or system overview. "E-commerce platform with React frontend, Node API, PostgreSQL database, and Stripe payments."</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3 class="step-title">AI Analyzes Architecture</h3>
+            <p class="step-desc">Gemini parses your description, identifies components, layers, and relationships, then structures them into a coherent visual layout.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3 class="step-title">Generate Diagram</h3>
+            <p class="step-desc">Get a hand-drawn style architecture diagram with labeled components, connection flows, and visual hierarchy. Download and use anywhere.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-8">Use Cases</h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="use-case-card">
+          <h3 class="use-case-title">Product Documentation</h3>
+          <p class="use-case-desc">Create visual overviews for technical docs, READMEs, and wikis.</p>
+        </div>
+
+        <div class="use-case-card">
+          <h3 class="use-case-title">Stakeholder Presentations</h3>
+          <p class="use-case-desc">Explain complex systems to non-technical audiences with friendly visuals.</p>
+        </div>
+
+        <div class="use-case-card">
+          <h3 class="use-case-title">System Design Interviews</h3>
+          <p class="use-case-desc">Quickly sketch architecture ideas when preparing for technical interviews.</p>
+        </div>
+
+        <div class="use-case-card">
+          <h3 class="use-case-title">Sprint Planning</h3>
+          <p class="use-case-desc">Visualize what you're building to align the team on technical approach.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-6">Tech Stack</h2>
+      <div class="flex flex-wrap gap-2">
+        <span class="tech-tag">Astro</span>
+        <span class="tech-tag">TypeScript</span>
+        <span class="tech-tag">Tailwind CSS</span>
+        <span class="tech-tag">Gemini API</span>
+        <span class="tech-tag">Vercel</span>
+        <span class="tech-tag">Bun</span>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="text-center py-12 border-t border-zinc-800">
+      <h2 class="text-2xl font-bold mb-4">Ready to Visualize Your Architecture?</h2>
+      <p class="text-zinc-400 mb-6 max-w-lg mx-auto">
+        Turn product descriptions into professional architecture diagrams in seconds.
+      </p>
+      <a href="https://getarchi.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition-colors">
+        Launch Archi
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </section>
+  </section>
+</Base>
+
+<style>
+  .feature-card {
+    background-color: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .feature-card:hover {
+    border-color: #3f3f46;
+  }
+
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-desc {
+    font-size: 0.875rem;
+    color: #a1a1aa;
+    line-height: 1.6;
+  }
+
+  .step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .step-number {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3b82f6;
+    color: #fff;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  .step-content {
+    flex: 1;
+    padding-bottom: 1.5rem;
+    border-left: 2px solid #27272a;
+    padding-left: 1.5rem;
+    margin-left: -1rem;
+  }
+
+  .step:last-child .step-content {
+    border-left-color: transparent;
+    padding-bottom: 0;
+  }
+
+  .step-title {
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 0.25rem;
+  }
+
+  .step-desc {
+    font-size: 0.875rem;
+    color: #a1a1aa;
+  }
+
+  .use-case-card {
+    background-color: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  .use-case-title {
+    font-weight: 600;
+    color: #fafafa;
+    font-size: 0.9375rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .use-case-desc {
+    font-size: 0.8125rem;
+    color: #71717a;
+  }
+
+  .tech-tag {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background-color: #27272a;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    color: #a1a1aa;
+  }
+</style>

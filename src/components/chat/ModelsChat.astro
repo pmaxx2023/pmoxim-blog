@@ -1,5 +1,4 @@
 ---
-import { MENTAL_MODELS_STARTER_QUESTIONS } from '../../data/mental-models';
 ---
 
 <div id="models-chat-container" class="flex flex-col h-[600px] bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden">
@@ -7,7 +6,7 @@ import { MENTAL_MODELS_STARTER_QUESTIONS } from '../../data/mental-models';
   <div class="px-6 py-4 border-b border-zinc-800 flex items-center gap-3">
     <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
     <div>
-      <h3 class="font-medium text-zinc-50">Mental Models Coach</h3>
+      <h3 class="font-medium text-zinc-50">Mental Models Chat</h3>
       <p class="text-sm text-zinc-500">122 frameworks to help you think better</p>
     </div>
   </div>
@@ -21,28 +20,9 @@ import { MENTAL_MODELS_STARTER_QUESTIONS } from '../../data/mental-models';
       </div>
       <div class="bg-zinc-800 rounded-lg px-4 py-3 max-w-[80%]">
         <p class="text-zinc-300">
-          I'm your Mental Models Coach. I can help you:
+          Describe a situation you're facing, ask about a specific framework, or tell me about a decision you're working through. I'll apply the right mental models.
         </p>
-        <ul class="text-zinc-400 text-sm mt-2 space-y-1">
-          <li>• <strong>Analyze situations</strong> - tell me what you're facing</li>
-          <li>• <strong>Think through decisions</strong> - I'll apply multiple lenses</li>
-          <li>• <strong>Learn frameworks</strong> - ask me to explain any model</li>
-          <li>• <strong>Find the right model</strong> - describe your problem</li>
-        </ul>
-        <p class="text-zinc-300 mt-3">What's on your mind?</p>
       </div>
-    </div>
-
-    <!-- Starter questions -->
-    <div id="models-starters" class="flex flex-wrap gap-2 mt-4">
-      {MENTAL_MODELS_STARTER_QUESTIONS.map((q) => (
-        <button
-          class="models-starter-btn px-3 py-2 text-sm text-zinc-400 bg-zinc-800 hover:bg-zinc-700 hover:text-zinc-50 rounded-lg transition-colors text-left"
-          data-question={q}
-        >
-          {q}
-        </button>
-      ))}
     </div>
   </div>
 
@@ -75,20 +55,8 @@ import { MENTAL_MODELS_STARTER_QUESTIONS } from '../../data/mental-models';
   const chatForm = document.getElementById('models-chat-form') as HTMLFormElement;
   const chatInput = document.getElementById('models-chat-input') as HTMLInputElement;
   const sendBtn = document.getElementById('models-send-btn') as HTMLButtonElement;
-  const startersContainer = document.getElementById('models-starters');
 
   let conversationHistory: Array<{role: string, content: string}> = [];
-
-  // Handle starter question clicks
-  document.querySelectorAll('.models-starter-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const question = (e.target as HTMLElement).dataset.question;
-      if (question) {
-        chatInput.value = question;
-        chatForm.dispatchEvent(new Event('submit'));
-      }
-    });
-  });
 
   // Add message to UI
   function addMessage(content: string, isUser: boolean) {
@@ -146,11 +114,6 @@ import { MENTAL_MODELS_STARTER_QUESTIONS } from '../../data/mental-models';
     const message = chatInput.value.trim();
     if (!message) return;
 
-    // Hide starters after first message
-    if (startersContainer) {
-      startersContainer.style.display = 'none';
-    }
-
     // Add user message
     addMessage(message, true);
     conversationHistory.push({ role: 'user', content: message });
@@ -169,7 +132,7 @@ import { MENTAL_MODELS_STARTER_QUESTIONS } from '../../data/mental-models';
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message,
-          history: conversationHistory.slice(-10) // Keep last 10 messages for context
+          history: conversationHistory.slice(-10)
         }),
       });
 
