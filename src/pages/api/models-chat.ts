@@ -1,18 +1,14 @@
 import type { APIRoute } from 'astro';
 import { MENTAL_MODELS_SYSTEM_PROMPT } from '../../data/mental-models';
+import { guardChatRequest } from '../../lib/chat-guard';
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
-    const { message, history } = await request.json();
-
-    if (!message) {
-      return new Response(JSON.stringify({ error: 'Message required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+    const guarded = await guardChatRequest(request, clientAddress);
+    if ('error' in guarded) return guarded.error;
+    const { messages } = guarded;
 
     const apiKey = import.meta.env.ANTHROPIC_API_KEY;
 
@@ -22,15 +18,6 @@ export const POST: APIRoute = async ({ request }) => {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-
-    // Build messages array with history
-    const messages = [
-      ...(history || []).map((msg: { role: string; content: string }) => ({
-        role: msg.role,
-        content: msg.content,
-      })),
-      { role: 'user', content: message },
-    ];
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
