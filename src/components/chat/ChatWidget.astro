@@ -59,6 +59,31 @@
 
   let conversationHistory: Array<{role: string, content: string}> = [];
 
+  const PASS_KEY = 'chat:passcode';
+  function getPasscode(reset: boolean) {
+    let code: string | null = null;
+    try { code = reset ? null : localStorage.getItem(PASS_KEY); } catch {}
+    if (!code) {
+      code = window.prompt('Enter the chat passcode') || '';
+      try { localStorage.setItem(PASS_KEY, code); } catch {}
+    }
+    return code;
+  }
+
+  async function postChat(url: string, payload: unknown) {
+    let passcode = getPasscode(false);
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-App-Passcode': passcode },
+        body: JSON.stringify(payload),
+      });
+      if (response.status !== 401) return response;
+      passcode = getPasscode(true);
+    }
+    throw new Error('Wrong passcode');
+  }
+
   function escapeHtml(text: string) {
     return text
       .replace(/&/g, '&amp;')
@@ -132,13 +157,9 @@
     addLoading();
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message,
-          history: conversationHistory.slice(0, -1).slice(-10)
-        }),
+      const response = await postChat('/api/chat', {
+        message,
+        history: conversationHistory.slice(0, -1).slice(-10)
       });
 
       if (!response.ok) throw new Error('Failed to get response');

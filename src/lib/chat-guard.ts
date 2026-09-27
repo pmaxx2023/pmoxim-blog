@@ -1,3 +1,5 @@
+import { timingSafeEqual } from 'node:crypto';
+
 type ChatMessage = { role: 'user' | 'assistant'; content: string };
 
 const RATE_LIMIT = 20;
@@ -23,6 +25,15 @@ function sameOrigin(request: Request) {
   } catch {
     return false;
   }
+}
+
+function passcodeOk(request: Request) {
+  const expected = import.meta.env.APP_PASSCODE ?? process.env.APP_PASSCODE;
+  const given = request.headers.get('x-app-passcode');
+  if (!expected || !given) return false;
+  const a = Buffer.from(given);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 function rateLimited(ip: string) {
@@ -76,6 +87,7 @@ export async function guardChatRequest(
   clientAddress: string,
 ): Promise<{ error: Response } | { messages: ChatMessage[] }> {
   if (!sameOrigin(request)) return { error: json({ error: 'Forbidden' }, 403) };
+  if (!passcodeOk(request)) return { error: json({ error: 'Passcode required' }, 401) };
   if (rateLimited(clientAddress || 'unknown')) {
     return { error: json({ error: 'Too many messages. Try again later.' }, 429) };
   }
