@@ -32,12 +32,12 @@ export const POST: APIRoute = async ({ request }) => {
   if (!apiKey) return openAiError('Model service is not configured.', 500, 'server_error');
 
   const maxTokens = Math.min(Math.max(Number(body?.max_tokens) || 150, 16), 300);
-  const temperature = typeof body?.temperature === 'number' ? Math.min(Math.max(body.temperature, 0), 1) : 0.7;
+  // Current Claude models don't take a temperature setting, so the app's value is ignored.
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, temperature, system: system || undefined, messages: turns }),
+    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, system: system || undefined, messages: turns }),
   });
   const data = await res.json().catch(() => null);
   if (!res.ok || !data) {
