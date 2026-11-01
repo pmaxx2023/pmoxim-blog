@@ -245,10 +245,10 @@ export const groups: PrototypeGroup[] = [
       },
       {
         title: 'Phogold Ink Trace',
-        description: 'Turns a photo into ink art in the browser. Free to try, with paid full and pro versions.',
+        description: 'Turns a photo into ink art in the browser. The store and paid versions are built but not launched yet.',
         tags: ['Image tools', 'E-commerce'],
-        status: 'Live',
-        href: 'https://pmaxx2023.github.io/Move37/',
+        status: 'Code',
+        href: 'https://github.com/pmaxx2023/Move37',
       },
       {
         title: 'Scribbleton',
