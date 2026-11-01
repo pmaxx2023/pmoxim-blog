@@ -118,3 +118,34 @@ export function rateLimited(request: Request, key: string, perHour: number): boo
   limitBuckets.set(id, recent);
   return false;
 }
+
+// Structured output: force a single tool call and return its input object.
+export async function claudeObject(opts: {
+  system: string;
+  prompt: string;
+  toolName: string;
+  description: string;
+  schema: Record<string, unknown>;
+  model?: string;
+  maxTokens?: number;
+}): Promise<any> {
+  const apiKey = import.meta.env.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('API key not configured');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: opts.model ?? (import.meta.env.ANTHROPIC_MODEL ?? process.env.ANTHROPIC_MODEL ?? DEFAULT_MODEL),
+      max_tokens: opts.maxTokens ?? 3000,
+      system: opts.system,
+      tools: [{ name: opts.toolName, description: opts.description, input_schema: opts.schema }],
+      tool_choice: { type: 'tool', name: opts.toolName },
+      messages: [{ role: 'user', content: opts.prompt }],
+    }),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok || !data) throw new Error(`Claude error ${res.status}: ${data?.error?.type ?? ''} ${data?.error?.message ?? ''}`.trim());
+  const block = (data.content ?? []).find((b: any) => b.type === 'tool_use' && b.name === opts.toolName);
+  if (!block) throw new Error(`No structured reply (stop: ${data.stop_reason})`);
+  return block.input;
+}

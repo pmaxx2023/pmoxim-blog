@@ -1,10 +1,35 @@
 import type { APIRoute } from 'astro';
-import { claudeText, rateLimited } from '../../../lib/claude';
+import { claudeObject, rateLimited } from '../../../lib/claude';
 
 export const prerender = false;
 
 const TOPOLOGIES = ['grid', 'concentric', 'track', 'pits', 'cruciform'] as const;
 const CATEGORIES = ['race', 'war', 'position', 'mancala', 'dice', 'domino', 'card'] as const;
+
+const str = { type: 'string' };
+const strList = { type: 'array', items: { type: 'string' } };
+const SCHEMA = {
+  type: 'object',
+  properties: {
+    name: { type: 'string', description: 'Original name, 2-4 words' },
+    tagline: { type: 'string', description: 'One sentence, under 16 words' },
+    category: { type: 'string', enum: [...CATEGORIES] },
+    topology: { type: 'string', enum: [...TOPOLOGIES] },
+    board: { type: 'object', properties: { size: { type: 'integer' }, notes: str }, required: ['size', 'notes'] },
+    players: { type: 'string', description: 'For example "2" or "2-4"' },
+    playTime: { type: 'string', description: 'For example "20 minutes"' },
+    complexity: { type: 'integer', minimum: 1, maximum: 5 },
+    components: { ...strList, description: '3-7 items' },
+    setup: { ...strList, description: '2-6 steps' },
+    turn: { ...strList, description: '2-6 steps' },
+    movement: str,
+    capture: { type: 'string', description: 'How pieces are captured, or how players interact if nothing is captured' },
+    victory: str,
+    variants: { ...strList, description: '1-3 short variants' },
+    bellNote: { type: 'string', description: 'One sentence naming the traditional game(s) this descends from' },
+  },
+  required: ['name', 'tagline', 'category', 'topology', 'board', 'players', 'playTime', 'complexity', 'components', 'setup', 'turn', 'movement', 'capture', 'victory', 'variants', 'bellNote'],
+};
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
@@ -14,33 +39,8 @@ Bell's families: race games, war games, positional games, mancala (sowing) games
 Board topologies you may use: grid (chess, checkers, go), concentric (Nine Men's Morris), track (backgammon, pachisi, looped or linear paths), pits (mancala rows of cavities), cruciform (cross-shaped, like peg solitaire or pachisi arms).
 
 Design ONE complete, playable, original game. Rules must be concrete enough to play tonight with simple components.
-Return ONLY a JSON object, no prose, with exactly these keys:
-{
-  "name": string (2-4 words, original),
-  "tagline": string (one sentence, under 16 words),
-  "category": one of ${JSON.stringify(CATEGORIES)},
-  "topology": one of ${JSON.stringify(TOPOLOGIES)},
-  "board": { "size": integer, "notes": string } — size means: grid = squares per side (5-11); concentric = number of rings (2-4); track = number of spaces (16-60); pits = pits per row (4-8); cruciform = arm length in spaces (2-5),
-  "players": string (e.g. "2" or "2-4"),
-  "playTime": string (e.g. "20 minutes"),
-  "complexity": integer 1-5,
-  "components": string[] (3-7 items),
-  "setup": string[] (2-6 steps),
-  "turn": string[] (2-6 steps),
-  "movement": string,
-  "capture": string (or how interaction works if nothing is captured),
-  "victory": string,
-  "variants": string[] (1-3 short variants),
-  "bellNote": string (one sentence naming the traditional game(s) this descends from)
-}
+Call the design_game tool with the full design. Board size means: grid = squares per side (5-11); concentric = number of rings (2-4); track = number of spaces (16-60); pits = pits per row (4-8); cruciform = arm length in spaces (2-5).
 Use plain words. Keep each string under 240 characters.`;
-
-function extractJson(text: string): any {
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-  if (start < 0 || end <= start) throw new Error('No JSON in reply');
-  return JSON.parse(text.slice(start, end + 1));
-}
 
 function clean(game: any) {
   const str = (v: unknown, n = 240) => (typeof v === 'string' ? v.slice(0, n) : '');
@@ -92,11 +92,18 @@ ${audience.length ? `Designed for: ${audience.join('; ')}` : ''}`;
   try {
     let game;
     for (let attempt = 0; attempt < 2 && !game; attempt++) {
-      const text = await claudeText({ system: SYSTEM, prompt, maxTokens: 1800 });
       try {
-        game = clean(extractJson(text));
-      } catch {
-        // retry once on malformed JSON
+        const raw = await claudeObject({
+          system: SYSTEM,
+          prompt,
+          toolName: 'design_game',
+          description: 'Record the complete design of one original, playable board game.',
+          schema: SCHEMA,
+          maxTokens: 3000,
+        });
+        game = clean(raw);
+      } catch (error) {
+        console.error('Gameo design attempt failed', error);
       }
     }
     if (!game) return json({ error: 'The designer returned a broken game. Try again.' }, 502);
