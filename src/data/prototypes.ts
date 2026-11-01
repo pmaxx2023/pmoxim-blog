@@ -170,8 +170,7 @@ export const groups: PrototypeGroup[] = [
         title: 'Vox',
         description: 'A personal AI setup with 79 skills, built on the open source PAI project.',
         tags: ['Claude Code', 'Skills'],
-        status: 'Code',
-        href: 'https://github.com/pmaxx2023/Personal_AI_Infrastructure',
+        status: 'Private build',
       },
       {
         title: 'Prior Art Machine',
