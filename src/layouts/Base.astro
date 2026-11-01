@@ -8,7 +8,7 @@ interface Props {
   description?: string;
 }
 
-const { title, description = 'Personal site and blog' } = Astro.props;
+const { title, description = 'Peni Moxim builds healthcare products, APIs and AI prototypes.' } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -18,18 +18,22 @@ const { title, description = 'Personal site and blog' } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b1020" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
     <title>{title}</title>
   </head>
   <body class="min-h-screen flex flex-col">
+    <a class="skip-link" href="#content">Skip to content</a>
     <Nav />
-    <main class="flex-1 pt-24">
+    <main id="content" class="flex-1">
       <slot />
     </main>
     <Footer />
@@ -39,3 +43,21 @@ const { title, description = 'Personal site and blog' } = Astro.props;
     </script>
   </body>
 </html>
+
+<style is:global>
+  .skip-link {
+    position: absolute;
+    left: 16px;
+    top: -48px;
+    z-index: 100;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .skip-link:focus {
+    top: 12px;
+  }
+</style>

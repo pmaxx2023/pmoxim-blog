@@ -2,22 +2,91 @@
 import Base from '../layouts/Base.astro';
 ---
 
-<Base title="Contact | pmoxim" description="Get in touch with me.">
-  <section class="max-w-3xl mx-auto px-6">
-    <header class="mb-12">
-      <h1 class="text-4xl font-bold tracking-tight">Contact</h1>
-      <p class="mt-4 text-lg text-zinc-400">
-        Have a question or want to work together? Feel free to reach out.
-      </p>
-    </header>
+<Base title="Contact | pmoxim" description="Get in touch with Peni Moxim.">
+  <section class="wrap page-head">
+    <p class="eyebrow">Contact</p>
+    <h1 class="page-title">Have a hard problem? <em>Let's talk.</em></h1>
+    <p class="lede">
+      Questions, a product to build, or a prototype you want to see. Email is the fastest way to reach me.
+    </p>
+  </section>
 
-    <div class="py-8">
-      <a
-        href="mailto:pmoxim2018@gmail.com"
-        class="text-2xl text-zinc-50 hover:text-blue-500 transition-colors"
-      >
-        pmoxim2018@gmail.com
+  <section class="wrap">
+    <div class="contact-grid">
+      <a class="contact-card primary" href="mailto:pmoxim2018@gmail.com">
+        <span class="label">Email</span>
+        <span class="value">pmoxim2018@gmail.com</span>
+        <span class="go">Send an email →</span>
+      </a>
+      <a class="contact-card" href="https://www.linkedin.com/in/pmoxim/" rel="noopener">
+        <span class="label">LinkedIn</span>
+        <span class="value">in/pmoxim</span>
+        <span class="go">Connect ↗</span>
+      </a>
+      <a class="contact-card" href="https://github.com/pmaxx2023" rel="noopener">
+        <span class="label">GitHub</span>
+        <span class="value">pmaxx2023</span>
+        <span class="go">See the code ↗</span>
+      </a>
+      <a class="contact-card" href="/ask">
+        <span class="label">Not ready to email?</span>
+        <span class="value">Ask the AI version of me first</span>
+        <span class="go">Ask a question →</span>
       </a>
     </div>
   </section>
 </Base>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .contact-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 28px;
+    min-height: 190px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: border-color 0.2s;
+  }
+  .contact-card:hover {
+    border-color: var(--accent);
+  }
+  .contact-card.primary {
+    border-color: rgba(242, 184, 75, 0.5);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .value {
+    font-family: var(--font-serif);
+    font-size: clamp(26px, 3.4vw, 36px);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+  .go {
+    margin-top: auto;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--accent);
+  }
+  @media (max-width: 700px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+    .contact-card {
+      min-height: 0;
+    }
+  }
+</style>

@@ -5,35 +5,74 @@ interface Props {
   date: Date;
   href: string;
   readingTime?: string;
+  tags?: string[];
 }
 
-const { title, description, date, href, readingTime } = Astro.props;
+const { title, description, date, href, readingTime, tags = [] } = Astro.props;
 
 const formattedDate = date.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'short',
   day: 'numeric',
+  timeZone: 'UTC',
 });
 ---
 
-<article class="group py-6 border-b border-zinc-800 last:border-0">
-  <a href={href} class="block">
-    <div class="flex items-center gap-4 text-sm text-zinc-500 mb-2">
+<article class="post">
+  <a href={href}>
+    <div class="meta">
       <time datetime={date.toISOString()}>{formattedDate}</time>
-      {readingTime && (
-        <>
-          <span class="text-zinc-700">|</span>
-          <span>{readingTime}</span>
-        </>
-      )}
+      {readingTime && <span>{readingTime}</span>}
+      {tags.slice(0, 2).map((t) => <span>{t}</span>)}
     </div>
-
-    <h3 class="text-xl font-semibold text-zinc-50 group-hover:text-blue-500 transition-colors">
-      {title}
-    </h3>
-
-    <p class="mt-2 text-zinc-400 line-clamp-2">
-      {description}
-    </p>
+    <h2>{title}</h2>
+    <p>{description}</p>
+    <span class="go" aria-hidden="true">Read →</span>
   </a>
 </article>
+
+<style>
+  .post {
+    border-bottom: 1px solid var(--line);
+  }
+  .post a {
+    display: block;
+    padding: 28px 0;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(28px, 3.4vw, 36px);
+    line-height: 1.1;
+    margin: 0;
+    transition: color 0.2s;
+  }
+  p {
+    margin: 10px 0 0;
+    color: var(--muted);
+    max-width: 62ch;
+  }
+  .go {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .post a:hover h2 {
+    color: var(--accent);
+  }
+</style>

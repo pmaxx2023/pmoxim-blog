@@ -1,7 +1,7 @@
 ---
 ---
 
-<div id="models-chat-container" class="flex flex-col h-[600px] bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden">
+<div id="models-chat-container" class="flex flex-col h-[600px] bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden">
   <!-- Header -->
   <div class="px-6 py-4 border-b border-zinc-800 flex items-center gap-3">
     <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
@@ -15,7 +15,7 @@
   <div id="models-messages" class="flex-1 overflow-y-auto p-6 space-y-4">
     <!-- Welcome message -->
     <div class="flex gap-3">
-      <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-sm font-medium text-white shrink-0">
+      <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-sm font-medium text-zinc-950 shrink-0">
         M
       </div>
       <div class="bg-zinc-800 rounded-lg px-4 py-3 max-w-[80%]">
@@ -39,7 +39,7 @@
       <button
         type="submit"
         id="models-send-btn"
-        class="px-6 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="px-6 py-3 bg-emerald-600 text-zinc-950 font-medium rounded-lg hover:bg-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Send
       </button>
@@ -64,11 +64,11 @@
     messageDiv.className = `flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`;
 
     const avatar = document.createElement('div');
-    avatar.className = `w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white shrink-0 ${isUser ? 'bg-zinc-600' : 'bg-emerald-600'}`;
+    avatar.className = `w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-zinc-950 shrink-0 ${isUser ? 'bg-zinc-300' : 'bg-emerald-600'}`;
     avatar.textContent = isUser ? 'You' : 'M';
 
     const bubble = document.createElement('div');
-    bubble.className = `rounded-lg px-4 py-3 max-w-[80%] ${isUser ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-300'}`;
+    bubble.className = `rounded-lg px-4 py-3 max-w-[80%] ${isUser ? 'bg-emerald-600 text-zinc-950' : 'bg-zinc-800 text-zinc-300'}`;
 
     // Simple markdown-like formatting
     let formatted = content
@@ -90,7 +90,7 @@
     loadingDiv.id = 'models-loading';
     loadingDiv.className = 'flex gap-3';
     loadingDiv.innerHTML = `
-      <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-sm font-medium text-white shrink-0">M</div>
+      <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-sm font-medium text-zinc-950 shrink-0">M</div>
       <div class="bg-zinc-800 rounded-lg px-4 py-3">
         <div class="flex gap-1">
           <div class="w-2 h-2 bg-zinc-500 rounded-full animate-bounce" style="animation-delay: 0ms"></div>

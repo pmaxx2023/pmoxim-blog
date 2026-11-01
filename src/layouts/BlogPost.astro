@@ -16,33 +16,83 @@ const formattedDate = new Date(frontmatter.date).toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
+  timeZone: 'UTC',
 });
 ---
 
-<Base title={frontmatter.title} description={frontmatter.description}>
-  <article class="max-w-3xl mx-auto px-6">
-    <header class="mb-12">
-      <time datetime={new Date(frontmatter.date).toISOString()} class="text-sm text-zinc-500">
-        {formattedDate}
-      </time>
-
-      <h1 class="mt-4 text-4xl font-bold tracking-tight">
-        {frontmatter.title}
-      </h1>
+<Base title={`${frontmatter.title} | pmoxim`} description={frontmatter.description}>
+  <article class="wrap-narrow">
+    <header class="post-head">
+      <a href="/blog" class="back">← All posts</a>
+      <p class="eyebrow">
+        <time datetime={new Date(frontmatter.date).toISOString()}>{formattedDate}</time>
+      </p>
+      <h1 class="post-title">{frontmatter.title}</h1>
+      {frontmatter.description && <p class="lede">{frontmatter.description}</p>}
 
       {frontmatter.tags && frontmatter.tags.length > 0 && (
-        <div class="mt-6 flex flex-wrap gap-2">
-          {frontmatter.tags.map(tag => (
-            <span class="px-3 py-1 text-sm text-zinc-400 bg-zinc-800 rounded-full">
-              {tag}
-            </span>
-          ))}
-        </div>
+        <ul class="tags">
+          {frontmatter.tags.map((tag) => <li>{tag}</li>)}
+        </ul>
       )}
     </header>
 
     <div class="prose">
       <slot />
     </div>
+
+    <footer class="post-foot">
+      <a class="btn" href="/blog">← All posts</a>
+      <a class="btn btn-primary" href="/ask">Ask me about this →</a>
+    </footer>
   </article>
 </Base>
+
+<style>
+  .post-head {
+    padding: 56px 0 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 28px;
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover {
+    color: var(--ink);
+  }
+  .post-title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(42px, 6.5vw, 68px);
+    line-height: 1.02;
+    margin: 0;
+  }
+  .tags {
+    list-style: none;
+    margin: 24px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tags li {
+    font-size: 13px;
+    color: #b6bfd0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  .post-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+  }
+</style>

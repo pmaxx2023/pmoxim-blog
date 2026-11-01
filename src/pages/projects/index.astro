@@ -1,60 +1,164 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
+import { groups, allPrototypes } from '../../data/prototypes';
 
-const projects = [
-  {
-    title: 'Clario',
-    description: 'FHIR diagram visualization tool. Generate technical healthcare interoperability diagrams by describing concepts in plain language.',
-    tags: ['FHIR', 'Healthcare', 'AI'],
-    href: 'https://getclario.net',
-  },
-  {
-    title: 'VantagePlan',
-    description: 'SAFe PI Planning tool built to streamline quarterly planning ceremonies. Drag-and-drop sprint planning, dependency visualization, and capacity management for distributed teams.',
-    tags: ['React', 'TypeScript', 'SAFe'],
-    href: 'https://vantageplan.net',
-  },
-  {
-    title: 'Synthetic Customer Intent',
-    description: 'LLM-based consumer intent evaluation system. Generate purchase rationales from synthetic personas, score them with semantic similarity, and visualize Likert distributions.',
-    tags: ['OpenAI', 'Embeddings', 'Research'],
-    href: 'https://syntheticcustomerintent.com',
-  },
-  {
-    title: 'Archi',
-    description: 'Transform product descriptions into hand-drawn XPLANE-style architecture diagrams. AI-powered visual thinking for system design.',
-    tags: ['Astro', 'Gemini', 'Visual'],
-    href: '/projects/archi',
-  },
-  {
-    title: 'Ask Me Anything',
-    description: 'AI-powered avatar trained on 25 years of product experience. Ask it about my background, frameworks, or how I think about building products.',
-    tags: ['Astro', 'Claude API', 'TypeScript'],
-    href: '/ask',
-  },
-  {
-    title: 'Mental Models Coach',
-    description: 'AI thinking coach with 122 mental models. Analyze situations, work through decisions, or learn frameworks.',
-    tags: ['AI', 'Mental Models', 'Decision-Making'],
-    href: '/models',
-  },
-];
+const total = allPrototypes.length;
+const live = allPrototypes.filter((p) => p.status === 'Live').length;
+const code = allPrototypes.filter((p) => p.status === 'Code').length;
+const privateBuilds = allPrototypes.filter((p) => p.status === 'Private build').length;
 ---
 
-<Base title="Prototype Projects | pmoxim" description="A collection of prototype projects I've built.">
-  <section class="max-w-4xl mx-auto px-6">
-    <header class="mb-12">
-      <h1 class="text-4xl font-bold tracking-tight">Prototype Projects</h1>
-      <p class="mt-4 text-lg text-zinc-400">
-        A collection of things I've built. Some for work, some for fun, all with care.
-      </p>
-    </header>
+<Base title="Prototypes | pmoxim" description={`${total} prototypes built by Peni Moxim, from FHIR tools to AI agents to small live stores.`}>
+  <section class="wrap page-head">
+    <p class="eyebrow">Prototypes</p>
+    <h1 class="page-title">Things I've <em>built.</em></h1>
+    <p class="lede">
+      {total} prototypes. Some for work, some for my house, some to test a hunch. Most took days, not months.
+    </p>
 
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {projects.map(project => (
-        <ProjectCard {...project} />
+    <dl class="counts">
+      <div><dt>Live</dt><dd>{live}</dd></div>
+      <div><dt>Open code</dt><dd>{code}</dd></div>
+      <div><dt>Private builds</dt><dd>{privateBuilds}</dd></div>
+    </dl>
+
+    <nav class="jump" aria-label="Prototype groups">
+      {groups.map((g) => (
+        <a href={`#${g.id}`}>{g.name} <span>{g.items.length}</span></a>
       ))}
-    </div>
+    </nav>
+  </section>
+
+  {groups.map((g) => (
+    <section class="wrap group" id={g.id} aria-labelledby={`${g.id}-title`}>
+      <div class="group-head">
+        <h2 class="section-title" id={`${g.id}-title`}>{g.name}</h2>
+        <p>{g.blurb}</p>
+      </div>
+      <div class="grid">
+        {g.items.map((p) => (
+          <ProjectCard
+            title={p.title}
+            description={p.description}
+            tags={p.tags}
+            href={p.href}
+            status={p.status}
+          />
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <section class="wrap note">
+    <p>
+      <strong>Live</strong> means you can use it today. <strong>Open code</strong> means the code is public on GitHub.
+      <strong>Private build</strong> means it runs for me but is not public yet. Want a demo of one?
+      <a href="/contact">Ask me.</a>
+    </p>
   </section>
 </Base>
+
+<style>
+  .counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 40px;
+    margin: 36px 0 0;
+  }
+  .counts div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .counts dt {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .counts dd {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 48px;
+    line-height: 1;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 36px;
+  }
+  .jump a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 14px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .jump a:hover {
+    border-color: var(--accent);
+  }
+  .jump span {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+  }
+  .group {
+    padding-top: 56px;
+    padding-bottom: 24px;
+    scroll-margin-top: 72px;
+  }
+  .group-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 32px;
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-bottom: 24px;
+  }
+  .group-head .section-title {
+    margin: 0;
+  }
+  .group-head p {
+    margin: 0;
+    color: var(--muted);
+    max-width: 46ch;
+    font-size: 16px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .note {
+    padding-top: 48px;
+  }
+  .note p {
+    margin: 0;
+    max-width: 70ch;
+    color: var(--muted);
+    font-size: 15px;
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+  }
+  .note strong {
+    color: var(--ink);
+  }
+  .note a {
+    color: var(--accent);
+  }
+  @media (max-width: 440px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

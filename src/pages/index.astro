@@ -1,38 +1,621 @@
 ---
 import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { featured, allPrototypes } from '../data/prototypes';
 ---
 
-<Base title="pmoxim">
-  <!-- Hero Section -->
-  <section class="max-w-4xl mx-auto px-6 py-16">
-    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight">
-      Hey, I'm <span class="text-blue-500">Peni Moxim</span>
-    </h1>
-    <p class="mt-6 text-xl text-zinc-300 max-w-2xl leading-relaxed">
-      25+ years turning complex healthcare problems into products that work. From claims adjudication to FHIR APIs, I've built and shipped at every scale—prototypes in a weekend, enterprise platforms serving millions.
-    </p>
-    <p class="mt-4 text-lg text-zinc-400 max-w-2xl">
-      Currently leading CMS-0057-F interoperability at Cigna. Building with AI since before it was cool.
-    </p>
-    <div class="mt-8 flex flex-wrap items-center gap-4">
-      <a
-        href="/resume"
-        class="px-5 py-2.5 bg-blue-600 text-zinc-50 font-medium rounded-lg hover:bg-blue-500 transition-colors"
-      >
-        Resume
-      </a>
-      <a
-        href="/projects"
-        class="px-5 py-2.5 border border-zinc-700 text-zinc-400 font-medium rounded-lg hover:border-zinc-600 hover:text-zinc-50 transition-colors"
-      >
-        Projects
-      </a>
-      <a
-        href="/ask"
-        class="px-5 py-2.5 border border-zinc-700 text-zinc-400 font-medium rounded-lg hover:border-zinc-600 hover:text-zinc-50 transition-colors"
-      >
-        Ask Me About Product
-      </a>
+<Base title="pmoxim · Peni Moxim" description="Peni Moxim builds healthcare products, APIs and AI prototypes. Director of Product Management at McKesson.">
+  <div class="promo">
+    <div class="wrap promo-row">
+      <button type="button" id="promo-drop">Click anywhere in the dark space below to drop a pill</button>
+      <a href="/projects"><span class="tag">New</span>{allPrototypes.length} prototypes, all in one place →</a>
+    </div>
+  </div>
+
+  <section class="hero" id="hero" aria-label="Intro">
+    <canvas id="pills" aria-hidden="true"></canvas>
+    <div class="hero-glow"></div>
+    <div class="wrap hero-copy">
+      <p class="hero-eyebrow">Healthcare · APIs · AI prototypes · Product strategy</p>
+      <h1>Products that <em>ship.</em></h1>
+      <p class="sub">Working prototypes and product thinking from 30 years in healthcare tech.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/projects">See the prototypes →</a>
+        <button class="btn" type="button" id="drop-btn">Drop a pill</button>
+      </div>
+    </div>
+    <p class="hint" id="pill-count">Click to drop a pill</p>
+  </section>
+
+  <section class="block" aria-labelledby="about-title">
+    <div class="wrap about">
+      <div>
+        <p class="eyebrow">About</p>
+        <h2 class="section-title" id="about-title">Hey, I'm <em>Peni Moxim.</em></h2>
+        <p class="lead">I turn hard healthcare problems into working products.</p>
+        <p>My work runs from claims systems to FHIR APIs. I have shipped at every size, from weekend prototypes to platforms that serve millions.</p>
+        <p>I have built with AI since before it was cool. Most of what I show here started as a prototype I built in a few days.</p>
+      </div>
+      <ul class="facts">
+        <li><span>Now</span>Director of Product Management, McKesson</li>
+        <li><span>Focus</span>API and data strategy for pharmacy ordering</li>
+        <li><span>Years</span>30 in healthcare and technology product leadership</li>
+        <li><span>Builds</span>Hardware, software and code, all self-taught</li>
+        <li><span>Studio</span>Cage Free Capital, a build-and-flip venture studio</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="featured-title">
+    <div class="wrap">
+      <div class="row-head">
+        <div>
+          <p class="eyebrow">Prototypes</p>
+          <h2 class="section-title" id="featured-title">A few to <em>try.</em></h2>
+        </div>
+        <a class="btn" href="/projects">All {allPrototypes.length} prototypes →</a>
+      </div>
+      <div class="featured">
+        {featured.map((p) => (
+          <ProjectCard title={p.title} description={p.description} tags={p.tags} href={p.href} status={p.status} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="work-title">
+    <div class="wrap">
+      <p class="eyebrow">More</p>
+      <h2 class="section-title" id="work-title">Pick a door.</h2>
+      <div class="cards">
+        <a class="card" href="/models">
+          <span class="num">01</span>
+          <h3>Models</h3>
+          <p>A thinking coach with 122 mental models. Bring a decision and get the right lenses.</p>
+          <span class="go">Browse the models →</span>
+        </a>
+        <a class="card" href="/ask">
+          <span class="num">02</span>
+          <h3>Ask Me</h3>
+          <p>Ask a product question. An AI version of me answers in plain words.</p>
+          <span class="go">Ask a question →</span>
+        </a>
+        <a class="card" href="/blog">
+          <span class="num">03</span>
+          <h3>Blog</h3>
+          <p>Short essays on product, healthcare rules and the frameworks I use.</p>
+          <span class="go">Read the blog →</span>
+        </a>
+        <a class="card" href="/resume">
+          <span class="num">04</span>
+          <h3>Resume</h3>
+          <p>Three decades of roles, teams and products shipped.</p>
+          <span class="go">Read the resume →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="books-title">
+    <div class="wrap">
+      <p class="eyebrow">Writing</p>
+      <h2 class="section-title" id="books-title">Books I've written.</h2>
+      <div class="books">
+        <div class="book">
+          <h3>Product Path</h3>
+          <p>A product strategy method, taught through the story of one distributor.</p>
+        </div>
+        <div class="book">
+          <h3>The MCP Developer's Handbook</h3>
+          <p>A builder's guide to the Model Context Protocol.</p>
+        </div>
+        <div class="book">
+          <h3>Whiskerton &amp; Kittypops</h3>
+          <p>A children's book series.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block cta" aria-labelledby="cta-title">
+    <div class="wrap cta-row">
+      <h2 class="section-title" id="cta-title">Have a hard problem? <em>Let's talk.</em></h2>
+      <div class="actions">
+        <a class="btn btn-primary" href="/contact">Get in touch →</a>
+        <a class="btn" href="/resume">Resume</a>
+      </div>
     </div>
   </section>
 </Base>
+
+<style>
+  .promo {
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+    font-size: 14px;
+  }
+  .promo-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 20px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+  .promo button {
+    background: none;
+    border: 0;
+    color: var(--muted);
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+  }
+  .promo button:hover {
+    color: var(--ink);
+  }
+  .promo a {
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .promo a:hover {
+    color: var(--accent);
+  }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-right: 6px;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    cursor: crosshair;
+  }
+  .hero canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .hero-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(60% 70% at 70% 30%, rgba(242, 184, 75, 0.1), transparent 70%);
+  }
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+    padding-top: 104px;
+    padding-bottom: 170px;
+    pointer-events: none;
+  }
+  .hero-copy a,
+  .hero-copy button {
+    pointer-events: auto;
+  }
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 22px;
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(56px, 10vw, 128px);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    margin: 0 0 24px;
+  }
+  h1 em {
+    color: var(--accent);
+  }
+  .sub {
+    font-size: clamp(18px, 2.2vw, 22px);
+    color: var(--muted);
+    max-width: 34ch;
+    margin: 0 0 36px;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .hint {
+    position: absolute;
+    right: 24px;
+    top: 18px;
+    z-index: 1;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  .block {
+    padding: 96px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .about {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .about p {
+    margin: 0 0 16px;
+    max-width: 62ch;
+  }
+  .about .lead {
+    font-size: 20px;
+  }
+  .facts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .facts li {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 16px;
+  }
+  .facts span {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    padding-top: 3px;
+  }
+
+  .row-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px 24px;
+  }
+  .featured {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 26px 24px 24px;
+    min-height: 220px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+  .card .num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .card h3 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.1;
+    margin: 0;
+  }
+  .card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .card .go {
+    margin-top: auto;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .books {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .book {
+    border-top: 2px solid var(--accent);
+    padding-top: 18px;
+  }
+  .book h3 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 28px;
+    margin: 0 0 8px;
+    line-height: 1.15;
+  }
+  .book p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .cta {
+    border-bottom: 0;
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .cta .section-title {
+    margin: 0;
+    max-width: 16ch;
+  }
+
+  @media (max-width: 900px) {
+    .about {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .books {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 760px) {
+    .hero-copy {
+      padding-top: 72px;
+      padding-bottom: 150px;
+    }
+    .block {
+      padding: 72px 0;
+    }
+  }
+  @media (max-width: 440px) {
+    .cards,
+    .featured {
+      grid-template-columns: 1fr;
+    }
+    .card {
+      min-height: 0;
+    }
+    .facts li {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+    .hint {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card {
+      transition: none;
+    }
+    .card:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  type Pill = { x: number; y: number; vx: number; vy: number; r: number; a: number; c: string };
+
+  const hero = document.getElementById('hero') as HTMLElement;
+  const canvas = document.getElementById('pills') as HTMLCanvasElement;
+  const countEl = document.getElementById('pill-count') as HTMLElement;
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const colors = ['#f4f1ea', '#f2b84b', '#7cc6c0', '#e98a7a', '#b9c3f0'];
+  const pills: Pill[] = [];
+  const GRAVITY = 1900;
+  const MAX = 90;
+  let dispensed = 0;
+  let W = 0;
+  let H = 0;
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const r = hero.getBoundingClientRect();
+    W = r.width;
+    H = r.height;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (const p of pills) {
+      if (p.x > W - p.r) p.x = W - p.r;
+      if (p.y > H - p.r) p.y = H - p.r;
+    }
+  }
+
+  function addPill(x: number, y: number) {
+    const r = 13 + Math.random() * 11;
+    pills.push({
+      x: Math.max(r, Math.min(W - r, x)),
+      y,
+      vx: (Math.random() - 0.5) * 220,
+      vy: 0,
+      r,
+      a: Math.random() * Math.PI,
+      c: colors[Math.floor(Math.random() * colors.length)],
+    });
+    if (pills.length > MAX) pills.shift();
+    dispensed++;
+    countEl.textContent = dispensed + (dispensed === 1 ? ' pill dispensed' : ' pills dispensed');
+  }
+
+  function step(dt: number) {
+    for (const p of pills) {
+      p.vy += GRAVITY * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+    }
+    for (let it = 0; it < 4; it++) {
+      for (let i = 0; i < pills.length; i++) {
+        const p = pills[i];
+        for (let j = i + 1; j < pills.length; j++) {
+          const q = pills[j];
+          const dx = q.x - p.x;
+          const dy = q.y - p.y;
+          const min = p.r + q.r;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < min * min && d2 > 0.0001) {
+            const d = Math.sqrt(d2);
+            const nx = dx / d;
+            const ny = dy / d;
+            const overlap = (min - d) / 2;
+            p.x -= nx * overlap;
+            p.y -= ny * overlap;
+            q.x += nx * overlap;
+            q.y += ny * overlap;
+            const rv = (q.vx - p.vx) * nx + (q.vy - p.vy) * ny;
+            if (rv < 0) {
+              const imp = -rv * 0.6;
+              p.vx -= nx * imp;
+              p.vy -= ny * imp;
+              q.vx += nx * imp;
+              q.vy += ny * imp;
+            }
+          }
+        }
+        if (p.y > H - p.r) {
+          p.y = H - p.r;
+          if (p.vy > 0) p.vy *= -0.32;
+          p.vx *= 0.96;
+        }
+        if (p.x < p.r) {
+          p.x = p.r;
+          if (p.vx < 0) p.vx *= -0.5;
+        }
+        if (p.x > W - p.r) {
+          p.x = W - p.r;
+          if (p.vx > 0) p.vx *= -0.5;
+        }
+      }
+    }
+    for (const p of pills) {
+      p.vx *= 0.995;
+      p.a += (p.vx / p.r) * dt;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of pills) {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      const g = ctx.createRadialGradient(-p.r * 0.35, -p.r * 0.35, p.r * 0.1, 0, 0, p.r);
+      g.addColorStop(0, 'rgba(255,255,255,0.5)');
+      g.addColorStop(0.4, p.c);
+      g.addColorStop(1, p.c);
+      ctx.rotate(p.a);
+      ctx.beginPath();
+      ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.globalAlpha = 0.92;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = 'rgba(11,16,32,0.35)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-p.r * 0.72, 0);
+      ctx.lineTo(p.r * 0.72, 0);
+      ctx.strokeStyle = 'rgba(11,16,32,0.4)';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  let last = 0;
+  let running = false;
+  function loop(t: number) {
+    const dt = Math.min((t - last) / 1000, 1 / 30);
+    last = t;
+    step(dt / 2);
+    step(dt / 2);
+    draw();
+    const moving = pills.some((p) => Math.abs(p.vy) > 8 || Math.abs(p.vx) > 8);
+    if (moving) requestAnimationFrame(loop);
+    else running = false;
+  }
+  function wake() {
+    if (running) return;
+    running = true;
+    last = performance.now();
+    requestAnimationFrame(loop);
+  }
+  function settle(n: number) {
+    for (let i = 0; i < n; i++) step(1 / 120);
+  }
+  function drop(x?: number) {
+    addPill(x == null ? W * (0.45 + Math.random() * 0.5) : x, -30);
+    if (reduceMotion) {
+      settle(400);
+      draw();
+    } else {
+      wake();
+    }
+  }
+
+  resize();
+  for (let k = 0; k < 14; k++) {
+    addPill(W * (0.5 + Math.random() * 0.48), H - 60 - Math.random() * 200);
+  }
+  settle(600);
+  draw();
+  dispensed = 0;
+  countEl.textContent = 'Click to drop a pill';
+
+  window.addEventListener('resize', () => {
+    resize();
+    settle(60);
+    draw();
+  });
+  hero.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a, button')) return;
+    const r = hero.getBoundingClientRect();
+    drop(e.clientX - r.left);
+  });
+  document.getElementById('drop-btn')?.addEventListener('click', () => drop());
+  document.getElementById('promo-drop')?.addEventListener('click', () => {
+    hero.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    drop();
+  });
+</script>

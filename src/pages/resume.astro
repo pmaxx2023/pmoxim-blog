@@ -2,12 +2,13 @@
 import Base from '../layouts/Base.astro';
 ---
 
-<Base title="Resume | Peni Moxim" description="Senior Product Manager with 25+ years in healthcare, technology, platforms & product">
-  <section class="max-w-4xl mx-auto px-6 py-16">
+<Base title="Resume | Peni Moxim" description="Peni Moxim, Director of Product Management. 30 years in healthcare, pharmacy, technology, platforms and product.">
+  <section class="wrap-narrow pt-16 pb-8">
     <!-- Header -->
     <div class="mb-12">
-      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight">Peni Moxim</h1>
-      <p class="mt-4 text-lg text-blue-500 font-medium">Senior Product Manager | Healthcare Interoperability | Improving Product Practice with AI</p>
+      <p class="eyebrow">Resume</p>
+      <h1 class="page-title">Peni <em>Moxim</em></h1>
+      <p class="mt-4 text-lg text-blue-500 font-medium">Director of Product Management | Pharmacy Ordering APIs &amp; Data | Healthcare Interoperability | Building with AI</p>
       <div class="mt-4 flex flex-wrap gap-4 text-sm text-zinc-400">
         <a href="https://pmoxim.com" class="hover:text-blue-500 transition-colors">pmoxim.com</a>
         <a href="tel:+12053528944" class="hover:text-blue-500 transition-colors">205-352-8944</a>
@@ -19,22 +20,32 @@ import Base from '../layouts/Base.astro';
 
     <!-- Summary -->
     <div class="mb-12">
-      <h2 class="text-xl font-semibold mb-4 text-zinc-50">Summary</h2>
+      <h2 class="font-serif font-normal text-4xl mb-5 text-zinc-50">Summary</h2>
       <p class="text-zinc-300 leading-relaxed">
-        Senior product leader with 25+ years in healthcare, technology, platforms & product. Extensive experience in ideating, architecting, building, and delivering payer products and technology. Deep expertise in both business & technology including claims adjudication, benefits verification, eligibility verification, provider contracting, prior authorization, and clinical trial operations. Track record of delivering enterprise-wide compliance initiatives across multiple business & tech units with fixed regulatory deadlines. Long track record of ideating and building prototypes, side hustles, proof of concept initiatives, beta launches, and enterprise scale product delivery. Can ideate, build, and deliver at any scale. AI builder, long before AI was mainstream. Excellent at mentoring, training, and leading product initiatives.
+        Product leader with 30 years in healthcare, pharmacy, technology, platforms &amp; product. Today I own API and data strategy for pharmacy ordering at McKesson. Extensive experience in ideating, architecting, building, and delivering payer products and technology. Deep expertise in both business & technology including claims adjudication, benefits verification, eligibility verification, provider contracting, prior authorization, and clinical trial operations. Track record of delivering enterprise-wide compliance initiatives across multiple business & tech units with fixed regulatory deadlines. Long track record of ideating and building prototypes, side hustles, proof of concept initiatives, beta launches, and enterprise scale product delivery. Can ideate, build, and deliver at any scale. AI builder, long before AI was mainstream. Excellent at mentoring, training, and leading product initiatives.
       </p>
     </div>
 
     <!-- Experience -->
     <div class="mb-12">
-      <h2 class="text-xl font-semibold mb-6 text-zinc-50">Experience</h2>
+      <h2 class="font-serif font-normal text-4xl mb-6 text-zinc-50">Experience</h2>
 
       <div class="space-y-10">
+        <!-- McKesson Current -->
+        <div class="border-l-2 border-blue-500 pl-6">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+            <h3 class="text-lg font-medium text-zinc-50">Director of Product Management, Pharmacy Ordering APIs &amp; Data</h3>
+            <span class="text-sm text-zinc-500">Mar 2026 – Present</span>
+          </div>
+          <p class="text-blue-400 text-sm mb-3">McKesson</p>
+          <p class="text-zinc-300 text-sm mb-2">Own the API and data strategy for ordering across independent and strategic pharmacy accounts</p>
+        </div>
+
         <!-- Cigna Current -->
         <div class="border-l-2 border-blue-500 pl-6">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
             <h3 class="text-lg font-medium text-zinc-50">Senior Product Manager, Healthcare Interoperability</h3>
-            <span class="text-sm text-zinc-500">Jan 2023 – Present</span>
+            <span class="text-sm text-zinc-500">Jan 2023 – 2026</span>
           </div>
           <p class="text-blue-400 text-sm mb-3">Cigna</p>
           <p class="text-zinc-300 text-sm mb-2">Drive product strategy, roadmaps, and go-to-market strategy for regulated clinical healthcare data exchange, HEDIS modernization, and AI innovation initiatives; 5 direct reports</p>
@@ -153,7 +164,7 @@ import Base from '../layouts/Base.astro';
 
     <!-- Independent Projects -->
     <div class="mb-12">
-      <h2 class="text-xl font-semibold mb-4 text-zinc-50">Independent Projects</h2>
+      <h2 class="font-serif font-normal text-4xl mb-5 text-zinc-50">Independent Projects</h2>
       <p class="text-zinc-400 text-sm mb-3">Built with LLMs</p>
       <ul class="space-y-2 text-zinc-300 text-sm ml-4 list-disc">
         <li>Healthcare prototypes & apps: <a href="https://getclario.com" class="text-blue-400 hover:text-blue-300">getclario.com</a>, compliance explorers, planning tools, quality metrics dashboards, workflow analyzers, many more</li>
@@ -163,7 +174,7 @@ import Base from '../layouts/Base.astro';
 
     <!-- Skills -->
     <div class="mb-12">
-      <h2 class="text-xl font-semibold mb-6 text-zinc-50">Skills</h2>
+      <h2 class="font-serif font-normal text-4xl mb-6 text-zinc-50">Skills</h2>
 
       <div class="grid gap-6 sm:grid-cols-2">
         <div>
@@ -208,7 +219,7 @@ import Base from '../layouts/Base.astro';
       <a
         href="/peni-moxim-resume.docx"
         download
-        class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-zinc-50 font-medium rounded-lg hover:bg-blue-500 transition-colors"
+        class="btn btn-primary"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

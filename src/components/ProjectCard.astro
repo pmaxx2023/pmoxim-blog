@@ -4,46 +4,132 @@ interface Props {
   description: string;
   tags?: string[];
   href?: string;
-  image?: string;
+  status?: string;
 }
 
-const { title, description, tags = [], href, image } = Astro.props;
+const { title, description, tags = [], href, status } = Astro.props;
+const external = href?.startsWith('http');
+const linkLabel = !href
+  ? ''
+  : href.includes('github.com')
+    ? 'See the code'
+    : external
+      ? 'Open it'
+      : 'Take a look';
+const statusClass = status === 'Live' ? 'live' : status === 'Code' ? 'code' : 'private';
 ---
 
-<article class="group relative border border-zinc-800 rounded-lg overflow-hidden bg-zinc-900 hover:border-zinc-700 transition-colors">
-  {image && (
-    <div class="aspect-video bg-zinc-800 overflow-hidden">
-      <img
-        src={image}
-        alt={title}
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-    </div>
-  )}
-
-  <div class="p-6">
-    <h3 class="text-lg font-semibold text-zinc-50 group-hover:text-blue-500 transition-colors">
-      {href ? (
-        <a href={href} class="after:absolute after:inset-0">
-          {title}
-        </a>
-      ) : (
-        title
-      )}
-    </h3>
-
-    <p class="mt-2 text-sm text-zinc-400 line-clamp-2">
-      {description}
-    </p>
-
-    {tags.length > 0 && (
-      <div class="mt-4 flex flex-wrap gap-2">
-        {tags.map(tag => (
-          <span class="px-2 py-1 text-xs font-medium text-zinc-500 bg-zinc-800 rounded">
-            {tag}
-          </span>
-        ))}
-      </div>
-    )}
+<article class:list={['proto-card', { linked: !!href }]}>
+  <div class="top">
+    {status && <span class:list={['status', statusClass]}>{status}</span>}
   </div>
+  <h3>
+    {href ? (
+      <a href={href} rel={external ? 'noopener' : undefined}>{title}</a>
+    ) : (
+      title
+    )}
+  </h3>
+  <p class="desc">{description}</p>
+  {tags.length > 0 && (
+    <ul class="tags">
+      {tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+  )}
+  {href && <span class="go" aria-hidden="true">{linkLabel} {external ? '↗' : '→'}</span>}
 </article>
+
+<style>
+  .proto-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px 22px 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .proto-card.linked:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    min-height: 22px;
+  }
+  .status {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+  }
+  .status.live {
+    color: #0b1020;
+    background: #7cc6c0;
+    border-color: #7cc6c0;
+  }
+  .status.code {
+    color: var(--accent);
+    border-color: rgba(242, 184, 75, 0.5);
+  }
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.1;
+    margin: 0;
+  }
+  h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+  }
+  .desc {
+    margin: 0;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .tags {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tags li {
+    font-size: 12px;
+    color: #b6bfd0;
+    background: #1a2440;
+    padding: 3px 9px;
+    border-radius: 6px;
+  }
+  .go {
+    margin-top: auto;
+    padding-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .proto-card {
+      transition: none;
+    }
+    .proto-card.linked:hover {
+      transform: none;
+    }
+  }
+</style>
