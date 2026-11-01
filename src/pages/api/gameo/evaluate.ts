@@ -82,6 +82,6 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ results: scored, average });
   } catch (error) {
     console.error('Gameo evaluate failed', error);
-    return json({ error: 'Could not run the evaluation. Try again in a minute.' }, 502);
+    return json({ error: 'Could not run the evaluation. Try again in a minute.', detail: String((error as Error).message || error).slice(0, 200) }, 502);
   }
 };
