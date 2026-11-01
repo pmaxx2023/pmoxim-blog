@@ -21,11 +21,18 @@ export async function embed(request: Request, input: string[]): Promise<{ model:
   const order = workingModel ? [workingModel, ...MODELS.filter((m) => m !== workingModel)] : MODELS;
   const errors: string[] = [];
   for (const model of order) {
-    const res = await fetch('https://ai-gateway.vercel.sh/v1/embeddings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ model, input }),
-    });
+    const call = () =>
+      fetch('https://ai-gateway.vercel.sh/v1/embeddings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ model, input }),
+      });
+    let res = await call();
+    // Free-tier models hit rate limits now and then; retry once.
+    if (res.status === 429 || res.status >= 500) {
+      await new Promise((r) => setTimeout(r, 900));
+      res = await call();
+    }
     const text = await res.text();
     if (res.ok) {
       try {
