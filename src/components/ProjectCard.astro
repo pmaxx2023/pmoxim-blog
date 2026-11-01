@@ -16,7 +16,7 @@ const linkLabel = !href
     : external
       ? 'Open it'
       : 'Take a look';
-const statusClass = status === 'Live' ? 'live' : status === 'Code' ? 'code' : 'private';
+const statusClass = status === 'Live' ? 'live' : status === 'Code' ? 'code' : status === 'Offline' ? 'offline' : 'private';
 ---
 
 <article class:list={['proto-card', { linked: !!href }]}>
@@ -74,6 +74,10 @@ const statusClass = status === 'Live' ? 'live' : status === 'Code' ? 'code' : 'p
     color: #0b1020;
     background: #7cc6c0;
     border-color: #7cc6c0;
+  }
+  .status.offline {
+    color: #e98a7a;
+    border-color: rgba(233, 138, 122, 0.5);
   }
   .status.code {
     color: var(--accent);

@@ -1,4 +1,4 @@
-export type Status = 'Live' | 'Code' | 'Private build';
+export type Status = 'Live' | 'Code' | 'Private build' | 'Offline';
 
 export interface Prototype {
   title: string;
@@ -130,9 +130,9 @@ export const groups: PrototypeGroup[] = [
       },
       {
         title: 'Gameo',
-        description: 'Generates new board games from a classic taxonomy of game mechanics.',
+        description: 'Generates new board games from a classic taxonomy of game mechanics. The live demo is offline.',
         tags: ['AI', 'Games'],
-        status: 'Live',
+        status: 'Offline',
         href: '/projects/gameo',
       },
       {
