@@ -91,6 +91,7 @@ ${audience.length ? `Designed for: ${audience.join('; ')}` : ''}`;
 
   try {
     let game;
+    let lastError = '';
     for (let attempt = 0; attempt < 2 && !game; attempt++) {
       try {
         const raw = await claudeObject({
@@ -104,9 +105,10 @@ ${audience.length ? `Designed for: ${audience.join('; ')}` : ''}`;
         game = clean(raw);
       } catch (error) {
         console.error('Gameo design attempt failed', error);
+        lastError = String((error as Error).message || error).slice(0, 200);
       }
     }
-    if (!game) return json({ error: 'The designer returned a broken game. Try again.' }, 502);
+    if (!game) return json({ error: 'The designer returned a broken game. Try again.', detail: lastError }, 502);
     return json({ game });
   } catch (error) {
     console.error('Gameo generate failed', error);
