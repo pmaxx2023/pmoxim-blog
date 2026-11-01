@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacy EDI Hub</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f8f7f4; --surface: #ffffff; --surface2: #f1efe8;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --text: #1a1a18; --muted: #5f5e5a; --dim: #9c9a92;
+  --accent: #185FA5; --accent-light: #E6F1FB;
+  --sans: -apple-system,'Segoe UI',sans-serif;
+  --mono: 'SF Mono','Fira Code',monospace;
+  --c-teal-fill:#E1F5EE;--c-teal-stroke:#0F6E56;--c-teal-text:#085041;
+  --c-blue-fill:#E6F1FB;--c-blue-stroke:#185FA5;--c-blue-text:#0C447C;
+  --c-coral-fill:#FAECE7;--c-coral-stroke:#993C1D;--c-coral-text:#712B13;
+  --c-amber-fill:#FAEEDA;--c-amber-stroke:#854F0B;--c-amber-text:#633806;
+  --c-purple-fill:#EEEDFE;--c-purple-stroke:#534AB7;--c-purple-text:#3C3489;
+  --c-gray-fill:#F1EFE8;--c-gray-stroke:#5F5E5A;--c-gray-text:#444441;
+  --c-green-fill:#EAF3DE;--c-green-stroke:#3B6D11;--c-green-text:#27500A;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#0d0f12;--surface:#141720;--surface2:#1c2030;
+    --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);
+    --text:#e2e8f0;--muted:#7a84a0;--dim:#4a5270;
+    --accent:#4f8ef7;--accent-light:#0C447C;
+    --c-teal-fill:#085041;--c-teal-stroke:#5DCAA5;--c-teal-text:#9FE1CB;
+    --c-blue-fill:#0C447C;--c-blue-stroke:#85B7EB;--c-blue-text:#B5D4F4;
+    --c-coral-fill:#712B13;--c-coral-stroke:#F0997B;--c-coral-text:#F5C4B3;
+    --c-amber-fill:#633806;--c-amber-stroke:#EF9F27;--c-amber-text:#FAC775;
+    --c-purple-fill:#3C3489;--c-purple-stroke:#AFA9EC;--c-purple-text:#CECBF6;
+    --c-gray-fill:#444441;--c-gray-stroke:#B4B2A9;--c-gray-text:#D3D1C7;
+    --c-green-fill:#27500A;--c-green-stroke:#97C459;--c-green-text:#C0DD97;
+  }
+}
+
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); }
+
+/* ── App shell ── */
+.shell { display: grid; grid-template-rows: 56px 1fr; height: 100vh; }
+
+/* ── Top nav ── */
+.topnav {
+  display: flex; align-items: center; padding: 0 24px; gap: 0;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+.brand { font-size: 14px; font-weight: 600; color: var(--text); margin-right: 32px; white-space: nowrap; }
+.brand span { color: var(--accent); }
+a.brand { text-decoration: none; }
+.nav-tabs { display: flex; gap: 0; height: 100%; }
+.nav-tab {
+  font-size: 13px; font-weight: 500; padding: 0 18px;
+  border: none; background: none; color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent; height: 100%;
+  display: flex; align-items: center; white-space: nowrap;
+  transition: color .15s;
+}
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-badge {
+  font-size: 10px; font-weight: 500; padding: 2px 6px;
+  background: var(--accent-light); color: var(--accent);
+  border-radius: 99px; margin-left: 6px; letter-spacing: 0.04em;
+}
+
+/* ── Pages ── */
+.page { display: none; height: calc(100vh - 56px); overflow-y: auto; }
+.page.active { display: block; }
+
+/* ── Page 1: Player map ── */
+.map-page { padding: 40px 32px 80px; max-width: 900px; margin: 0 auto; }
+.eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.10em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+h1 { font-size: 26px; font-weight: 600; line-height: 1.2; margin-bottom: 8px; }
+.subtitle { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 32px; max-width: 620px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.fbtn {
+  font-size: 12px; font-weight: 500; padding: 5px 14px;
+  border: 1px solid var(--border2); border-radius: 99px;
+  background: transparent; color: var(--muted); cursor: pointer; font-family: var(--sans); transition: all .15s;
+}
+.fbtn:hover { color: var(--text); border-color: var(--text); }
+.fbtn.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+.fl { transition: opacity .25s; }
+.fl.off { opacity: .07; }
+.ng { cursor: pointer; }
+.info-box {
+  margin-top: 16px; padding: 14px 18px; border-left: 3px solid var(--border2);
+  background: var(--surface2); border-radius: 0 10px 10px 0;
+  font-size: 13px; color: var(--muted); line-height: 1.7; min-height: 54px; transition: border-color .2s;
+}
+.info-box.active { border-left-color: var(--accent); }
+.info-box b { font-weight: 600; color: var(--text); }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 16px; }
+.leg-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+.leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
+.edi-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.edi-table th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); border-bottom: 1px solid var(--border); }
+.edi-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+.edi-table tr:last-child td { border-bottom: none; }
+.edi-table td:first-child { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; }
+.edi-table td:nth-child(2) { color: var(--text); }
+.edi-row { cursor: pointer; transition: background .12s; }
+.edi-row:hover { background: var(--surface2); }
+.edi-row:hover .row-arrow { opacity: 1; color: var(--accent); }
+.row-arrow { font-size: 14px; color: var(--dim); opacity: 0; transition: opacity .12s; text-align: center; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px; margin-right: 3px; }
+.p-teal { background:var(--c-teal-fill); color:var(--c-teal-text); }
+.p-coral { background:var(--c-coral-fill); color:var(--c-coral-text); }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.three-col > div { padding: 14px; background: var(--surface2); border-radius: 10px; }
+.three-col .col-label { font-size: 11px; font-weight: 500; color: var(--muted); margin-bottom: 5px; letter-spacing: 0.04em; }
+.three-col p { font-size: 13px; color: var(--text); line-height: 1.6; }
+@media (max-width: 640px) { .three-col { grid-template-columns: 1fr; } }
+
+/* ── Page 2: Training device ── */
+.trainer { display: grid; grid-template-columns: 260px 1fr; height: calc(100vh - 56px); }
+.sidebar { background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; padding: 14px 0; }
+.sb-section { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; color: var(--dim); padding: 0 14px 8px; text-transform: uppercase; }
+.step-btn {
+  width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+  padding: 9px 14px; display: flex; align-items: flex-start; gap: 10px;
+  border-left: 2px solid transparent; transition: all .15s;
+}
+.step-btn:hover { background: var(--surface2); }
+.step-btn.active { background: var(--surface2); border-left-color: var(--accent); }
+.step-num {
+  width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--muted);
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-btn.active .step-num { background: var(--accent); border-color: var(--accent); color: #fff; }
+.step-info { flex: 1; min-width: 0; }
+.step-label { font-size: 12px; font-weight: 500; color: var(--text); line-height: 1.3; }
+.step-edi { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+.step-btn.active .step-edi { color: var(--accent); }
+.connector { width: 1px; height: 8px; background: var(--border); margin: 0 auto 0 25px; }
+.tmain { overflow: hidden; display: flex; flex-direction: column; }
+.step-header { padding: 18px 24px 14px; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+.step-header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.step-icon { font-size: 20px; }
+.step-title { font-size: 17px; font-weight: 500; }
+.step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 680px; }
+.edi-pill { font-family: var(--mono); font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 3px; }
+.pill-850,.pill-855,.pill-856,.pill-810,.pill-820 { background:var(--c-teal-fill); color:var(--c-teal-text); }
+.pill-844,.pill-849,.pill-867 { background:var(--c-coral-fill); color:var(--c-coral-text); }
+.tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; padding: 0 24px; }
+.tab { font-size: 12px; font-weight: 500; padding: 9px 14px; cursor: pointer; border-bottom: 2px solid transparent; color: var(--muted); background: none; border-top: none; border-left: none; border-right: none; transition: color .15s; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { flex: 1; overflow-y: auto; padding: 20px 24px; display: none; }
+.tab-content.active { display: block; }
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+.info-card h3 { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+.kv-row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.kv-row:last-child { border-bottom: none; }
+.kv-key { font-size: 12px; color: var(--muted); }
+.kv-val { font-size: 12px; font-weight: 500; color: var(--text); font-family: var(--mono); }
+.kv-val.green { color: var(--c-green-stroke); }
+.kv-val.amber { color: var(--c-amber-stroke); }
+.flow-note { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 12px 14px; margin-bottom: 14px; }
+.flow-note h4 { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.flow-note p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+.line-items { width: 100%; border-collapse: collapse; font-size: 12px; }
+.line-items th { text-align: left; padding: 7px 10px; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); border-bottom: 1px solid var(--border); }
+.line-items td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--muted); }
+.line-items tr:last-child td { border-bottom: none; }
+.line-items td:first-child,.line-items td.mono { font-family: var(--mono); color: var(--text); }
+.line-items .total-row td { color: var(--text); font-weight: 500; border-top: 1px solid var(--border2); }
+.edi-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.edi-toolbar span { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.edi-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; }
+.edi-raw { font-family: var(--mono); font-size: 12px; line-height: 2; white-space: pre; }
+.seg-id { color: var(--accent); font-weight: 500; }
+.seg-val { color: var(--text); }
+.seg-qual { color: var(--c-amber-stroke); }
+.seg-ndc { color: var(--c-green-stroke); }
+.json-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; }
+.json-raw { font-family: var(--mono); font-size: 12px; line-height: 1.8; white-space: pre; }
+.jk { color: var(--accent); }
+.js { color: var(--c-green-stroke); }
+.jn { color: var(--c-coral-stroke); }
+.jb { color: var(--c-purple-stroke); }
+.nav-bar { padding: 10px 24px; border-top: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.nav-btn { font-family: var(--sans); font-size: 12px; font-weight: 500; padding: 6px 14px; border: 1px solid var(--border2); border-radius: 6px; background: var(--surface2); color: var(--text); cursor: pointer; transition: all .15s; }
+.nav-btn:hover { background: var(--border2); }
+.nav-btn:disabled { opacity: .3; cursor: not-allowed; }
+.nav-progress { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+/* ── Page 3: Translator ── */
+.trans-page { padding: 40px 32px 80px; max-width: 1100px; margin: 0 auto; }
+.trans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel { display: flex; flex-direction: column; gap: 8px; }
+.panel label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+textarea, .json-output {
+  width: 100%; min-height: 420px; border: 1px solid var(--border2);
+  border-radius: 10px; padding: 14px; font-family: var(--mono); font-size: 12px;
+  background: var(--surface2); color: var(--text); line-height: 1.7;
+}
+textarea { resize: none; outline: none; }
+textarea:focus { border-color: var(--accent); }
+.json-output { overflow: auto; white-space: pre; }
+.trans-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.tbtn { font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 7px 16px; border: 1px solid var(--border2); border-radius: 8px; background: var(--surface2); color: var(--text); cursor: pointer; transition: all .15s; }
+.tbtn:hover { background: var(--border); }
+.tbtn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tbtn.primary:hover { opacity: .85; }
+.tstatus { font-size: 12px; font-family: var(--mono); padding: 3px 10px; border-radius: 6px; }
+.tstatus.ok { background: var(--c-green-fill); color: var(--c-green-text); }
+.tstatus.err { background: var(--c-coral-fill); color: var(--c-coral-text); }
+@media (max-width: 700px) { .trans-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- Top nav -->
+<nav class="topnav">
+  <a class="brand" href="index.html">Pharmacy <span>EDI</span> Hub</a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('map',this)">Player map</button>
+    <button class="nav-tab" onclick="showPage('trainer',this)">
+      Transaction flow <span class="nav-badge">9 steps</span>
+    </button>
+    <button class="nav-tab" onclick="showPage('translator',this)">EDI → JSON</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 1 · PLAYER MAP
+══════════════════════════════════════════════ -->
+<div class="page active" id="page-map">
+<div class="map-page">
+  <p class="eyebrow">Pharmaceutical supply chain · EDI</p>
+  <h1>Who talks to whom — and how</h1>
+  <p class="subtitle">McKesson sits at the center of every financial and data flow in the pharmacy supply chain. Click any player to understand their role.</p>
+
+  <div class="card">
+    <div class="filter-bar">
+      <button class="fbtn on" id="fa" onclick="sf('all',this)">All flows</button>
+      <button class="fbtn" id="fo" onclick="sf('ord',this)">Order &amp; payment</button>
+      <button class="fbtn" id="fc" onclick="sf('cb',this)">Chargeback cycle</button>
+      <button class="fbtn" id="fk" onclick="sf('con',this)">Contracting</button>
+    </div>
+    <svg width="100%" viewBox="0 0 680 420">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+    <g class="fl ord-f">
+      <line x1="176" y1="200" x2="250" y2="200" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="213" y="193" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#1D9E75" font-weight="500">850 · 820</text>
+      <line x1="250" y1="216" x2="176" y2="216" stroke="#085041" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="213" y="230" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#085041" font-weight="500">855 · 856 · 810</text>
+    </g>
+    <g class="fl cb-f">
+      <line x1="434" y1="200" x2="508" y2="200" stroke="#D85A30" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="471" y="193" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#D85A30" font-weight="500">844 · 867</text>
+      <line x1="508" y1="216" x2="434" y2="216" stroke="#712B13" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="471" y="230" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#712B13" font-weight="500">849</text>
+      <path d="M434,234 Q434,290 340,290 Q280,290 280,350" fill="none" stroke="#7F77DD" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+      <text x="410" y="284" font-size="10" font-family="var(--mono)" fill="#534AB7" font-weight="500">867 relay</text>
+    </g>
+    <g class="fl con-f">
+      <line x1="340" y1="72" x2="340" y2="175" stroke="#BA7517" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="292" y="126" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#854F0B" font-weight="500">contract terms</text>
+      <path d="M252,50 L94,50 L94,183" fill="none" stroke="#BA7517" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+      <text x="172" y="43" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#854F0B" font-weight="500">GPO rates</text>
+      <path d="M94,245 L94,350" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+      <text x="108" y="300" font-size="10" font-family="var(--mono)" fill="#5F5E5A" font-weight="500">DSCSA</text>
+    </g>
+    <g class="ng" id="n-ph" onclick="sn('pharmacy')">
+      <rect x="14" y="183" width="160" height="50" rx="10" stroke-width="0.5" fill="var(--c-teal-fill)" stroke="var(--c-teal-stroke)"/>
+      <text x="94" y="204" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="var(--c-teal-text)" font-family="var(--sans)">Pharmacy</text>
+      <text x="94" y="221" text-anchor="middle" dominant-baseline="central" font-size="11" fill="var(--c-teal-stroke)" font-family="var(--sans)">SA · community · indie</text>
+    </g>
+    <g class="ng" id="n-mc" onclick="sn('mck')">
+      <rect x="250" y="172" width="180" height="72" rx="12" stroke-width="1.5" fill="var(--c-blue-fill)" stroke="var(--c-blue-stroke)"/>
+      <text x="340" y="198" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="600" fill="var(--c-blue-text)" font-family="var(--sans)">McKesson</text>
+      <text x="340" y="215" text-anchor="middle" dominant-baseline="central" font-size="12" fill="var(--c-blue-stroke)" font-family="var(--sans)">Wholesale distributor</text>
+      <text x="340" y="231" text-anchor="middle" dominant-baseline="central" font-size="11" fill="var(--c-blue-stroke)" font-family="var(--sans)" font-style="italic">the intermediary</text>
+    </g>
+    <g class="ng" id="n-mf" onclick="sn('mfr')">
+      <rect x="508" y="183" width="160" height="50" rx="10" stroke-width="0.5" fill="var(--c-coral-fill)" stroke="var(--c-coral-stroke)"/>
+      <text x="588" y="204" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="var(--c-coral-text)" font-family="var(--sans)">Manufacturer</text>
+      <text x="588" y="221" text-anchor="middle" dominant-baseline="central" font-size="11" fill="var(--c-coral-stroke)" font-family="var(--sans)">Teva · Pfizer · Lilly</text>
+    </g>
+    <g class="ng" id="n-gp" onclick="sn('gpo')">
+      <rect x="252" y="28" width="176" height="44" rx="10" stroke-width="0.5" fill="var(--c-amber-fill)" stroke="var(--c-amber-stroke)"/>
+      <text x="340" y="46" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="var(--c-amber-text)" font-family="var(--sans)">GPO</text>
+      <text x="340" y="62" text-anchor="middle" dominant-baseline="central" font-size="11" fill="var(--c-amber-stroke)" font-family="var(--sans)">Group purchasing org</text>
+    </g>
+    <g class="ng" id="n-pb" onclick="sn('pbm')">
+      <rect x="252" y="350" width="176" height="44" rx="10" stroke-width="0.5" fill="var(--c-purple-fill)" stroke="var(--c-purple-stroke)"/>
+      <text x="340" y="368" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="var(--c-purple-text)" font-family="var(--sans)">PBM / Payer</text>
+      <text x="340" y="384" text-anchor="middle" dominant-baseline="central" font-size="11" fill="var(--c-purple-stroke)" font-family="var(--sans)">CVS · ESI · OptumRx</text>
+    </g>
+    <g class="ng" id="n-rg" onclick="sn('reg')">
+      <rect x="14" y="350" width="160" height="44" rx="10" stroke-width="0.5" fill="var(--c-gray-fill)" stroke="var(--c-gray-stroke)"/>
+      <text x="94" y="368" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="var(--c-gray-text)" font-family="var(--sans)">FDA / DEA</text>
+      <text x="94" y="384" text-anchor="middle" dominant-baseline="central" font-size="11" fill="var(--c-gray-stroke)" font-family="var(--sans)">DSCSA traceability</text>
+    </g>
+    </svg>
+    <div class="info-box" id="inf">Click any player above to see their role in the supply chain.</div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#1D9E75"></div>Order &amp; payment</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#D85A30"></div>Chargeback cycle</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#BA7517"></div>Contracting</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#7F77DD"></div>Data relay</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">EDI transaction reference <span style="font-size:11px;font-weight:400;color:var(--dim);letter-spacing:0;text-transform:none;">— click any row to see the full transaction in the flow trainer</span></p>
+    <table class="edi-table">
+      <thead><tr><th>Tx</th><th>Name</th><th>Direction</th><th>Purpose</th><th style="width:28px;"></th></tr></thead>
+      <tbody>
+        <tr class="edi-row" onclick="goToTrainer(2)" title="Open in Transaction Flow"><td><span class="pill p-teal">850</span></td><td>Purchase Order</td><td>Pharmacy → McKesson</td><td>The order itself. All downstream transactions reference this PO number.</td><td class="row-arrow">→</td></tr>
+        <tr class="edi-row" onclick="goToTrainer(3)" title="Open in Transaction Flow"><td><span class="pill p-teal">855</span></td><td>PO Acknowledgment</td><td>McKesson → Pharmacy</td><td>Line-level accept / modify / reject. IA = accepted. IB = changed. IR = rejected.</td><td class="row-arrow">→</td></tr>
+        <tr class="edi-row" onclick="goToTrainer(4)" title="Open in Transaction Flow"><td><span class="pill p-teal">856</span></td><td>Advance Ship Notice</td><td>McKesson → Pharmacy</td><td>Carton detail with lot numbers and expiry dates. Required by DSCSA.</td><td class="row-arrow">→</td></tr>
+        <tr class="edi-row" onclick="goToTrainer(6)" title="Open in Transaction Flow"><td><span class="pill p-teal">810</span></td><td>Invoice</td><td>McKesson → Pharmacy</td><td>What you owe. Price vs. contract delta here triggers the 844 chargeback.</td><td class="row-arrow">→</td></tr>
+        <tr class="edi-row" onclick="goToTrainer(8)" title="Open in Transaction Flow"><td><span class="pill p-teal">820</span></td><td>Payment Remittance</td><td>Pharmacy → McKesson</td><td>Net payment with credits applied. Closes the financial loop on the 810.</td><td class="row-arrow">→</td></tr>
+        <tr class="edi-row" onclick="goToTrainer(7)" title="Open in Transaction Flow"><td><span class="pill p-coral">844</span></td><td>Chargeback Claim</td><td>McKesson → Manufacturer</td><td>Filed by McKesson on pharmacy's behalf. Claims WAC-vs-contract delta.</td><td class="row-arrow">→</td></tr>
+        <tr class="edi-row" onclick="goToTrainer(7)" title="Open in Transaction Flow"><td><span class="pill p-coral">849</span></td><td>Chargeback Response</td><td>Manufacturer → McKesson</td><td>Accept or deny per line. Denial triggers dispute workflow.</td><td class="row-arrow">→</td></tr>
+        <tr class="edi-row" onclick="goToTrainer(7)" title="Open in Transaction Flow"><td><span class="pill p-coral">867</span></td><td>Resale Report</td><td>McKesson → Manufacturer</td><td>Actual dispensed quantities. Validates 844 claims. Feeds manufacturer market share.</td><td class="row-arrow">→</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Why McKesson's intermediary position matters for chargebacks</p>
+    <p style="font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:14px;">A pharmacy does not file chargeback claims directly. McKesson aggregates claims across its network and submits batched 844s to manufacturers. This creates both scale advantage and dependency risk.</p>
+    <div class="three-col">
+      <div><div class="col-label">SCALE ADVANTAGE</div><p>Manufacturers receive one batched file per distributor, not millions of individual pharmacy claims.</p></div>
+      <div><div class="col-label">DEPENDENCY RISK</div><p>One McKesson submission error or missed window affects every pharmacy in that batch — not just one.</p></div>
+      <div><div class="col-label">867 AS EVIDENCE</div><p>The 867 resale data is what manufacturers use to validate 844 quantities. Mismatch = denial.</p></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 2 · TRAINING DEVICE
+══════════════════════════════════════════════ -->
+<div class="page" id="page-trainer">
+<div class="trainer">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="tmain">
+    <div class="step-header" id="step-header"></div>
+    <div class="tabs" id="tabs-bar">
+      <button class="tab active" onclick="switchTab('overview')">Overview</button>
+      <button class="tab" onclick="switchTab('edi')">Raw EDI</button>
+      <button class="tab" onclick="switchTab('json')">JSON</button>
+    </div>
+    <div class="tab-content active" id="tab-overview"></div>
+    <div class="tab-content" id="tab-edi"></div>
+    <div class="tab-content" id="tab-json"></div>
+    <div class="nav-bar">
+      <button class="nav-btn" id="btn-prev" onclick="navigate(-1)">← Previous</button>
+      <span class="nav-progress" id="nav-progress"></span>
+      <button class="nav-btn" id="btn-next" onclick="navigate(1)">Next →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 3 · TRANSLATOR
+══════════════════════════════════════════════ -->
+<div class="page" id="page-translator">
+<div class="trans-page">
+  <p class="eyebrow">EDI parsing tool</p>
+  <h1 style="margin-bottom:8px;">EDI 850 → JSON translator</h1>
+  <p class="subtitle" style="margin-bottom:28px;">Paste any EDI 850 purchase order and get structured JSON. Handles ISA/GS envelope, BEG, REF, DTM, N1 party blocks, PO1 line items, PID descriptions, and CTT totals.</p>
+  <div class="trans-grid">
+    <div class="panel">
+      <label>Raw EDI 850 input</label>
+      <textarea id="edi-in" spellcheck="false" placeholder="Paste EDI 850 here...&#10;&#10;Segments end with ~&#10;Elements separated by *"></textarea>
+      <div class="trans-toolbar">
+        <button class="tbtn primary" id="btn-translate">Translate →</button>
+        <button class="tbtn" id="btn-sample">Load sample</button>
+        <button class="tbtn" id="btn-copy">Copy JSON</button>
+        <span id="tstatus"></span>
+      </div>
+    </div>
+    <div class="panel">
+      <label>JSON output</label>
+      <div class="json-output" id="json-out">{ }</div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- end shell -->
+
+<script>
+function goToTrainer(stepIdx) {
+  var trainerTab = document.querySelector('.nav-tab:nth-child(2)');
+  showPage('trainer', trainerTab);
+  if (!trainerInit) initTrainer();
+  goTo(stepIdx);
+}
+
+/* ── Page switching ── */
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('page-' + id).classList.add('active');
+  el.classList.add('active');
+  if (id === 'trainer' && !trainerInit) initTrainer();
+}
+
+/* ════════════════════════════════════
+   PLAYER MAP
+════════════════════════════════════ */
+var INFO = {
+  pharmacy:'<b>Pharmacy</b> — the buyer. Sends 850 POs to McKesson and 820 remittances at settlement. Receives 855 acknowledgments, 856 ship notices, and 810 invoices back. Does not file chargebacks to manufacturers directly — McKesson batches and submits 844 claims on behalf of all pharmacy customers. Three segments: Strategic Accounts (Kinney, Wegmans), community chains, and independents.',
+  mck:'<b>McKesson</b> — the intermediary. Every other player connects through it. Aggregates POs from pharmacies, manages fulfillment, invoices via 810. Critically: batches 844 chargeback claims to manufacturers on behalf of all pharmacy customers. Manufacturer credits flow back through McKesson before reaching the pharmacy. One submission error or missed window affects every pharmacy in the batch.',
+  mfr:'<b>Manufacturer</b> — the contract source and chargeback payor. Sets WAC pricing and negotiates contracts with GPOs and large accounts. Receives batched 844 chargeback claims from McKesson, responds via 849. Uses 867 resale data to validate claimed volumes — a mismatch is one of the most common denial triggers.',
+  gpo:'<b>GPO (Group Purchasing Organization)</b> — the contract negotiator. Examples: Intalere, Vizient, PharMerica. Aggregates member pharmacy purchasing power to negotiate better prices from manufacturers. Those contract terms enter McKesson\'s pricing engine. The delta between what McKesson charged (WAC) and the GPO contract price is the chargeback amount — filed by McKesson, not the pharmacy.',
+  pbm:'<b>PBM / Payer</b> — the formulary and rebate layer. CVS Caremark, Express Scripts, OptumRx. Determines which drugs are covered and at what tier. Negotiates manufacturer rebates for formulary placement — a parallel financial flow to the chargeback cycle. McKesson\'s 867 data ultimately informs rebate calculations.',
+  reg:'<b>FDA / DEA / DSCSA</b> — the compliance layer. The Drug Supply Chain Security Act requires electronic lot-level traceability from manufacturer to pharmacy for every prescription drug. Lot numbers and expiry dates in the 856 ASN are a DSCSA requirement. McKesson must maintain a complete chain-of-custody record.'
+};
+
+function sf(t, el) {
+  ['fa','fo','fc','fk'].forEach(function(id){ var b=document.getElementById(id); if(b) b.classList.remove('on'); });
+  el.classList.add('on');
+  document.querySelectorAll('.fl').forEach(function(f){
+    t==='all' ? f.classList.remove('off') : f.classList.toggle('off', !f.classList.contains(t+'-f'));
+  });
+}
+function sn(id) {
+  var el=document.getElementById('inf');
+  if(INFO[id]){ el.innerHTML=INFO[id]; el.classList.add('active'); }
+}
+
+/* ════════════════════════════════════
+   TRAINING DEVICE
+════════════════════════════════════ */
+var trainerInit = false;
+var currentStep = 0;
+var currentTab = 'overview';
+
+var STEPS = [
+  { num:1, icon:'🏪', label:'PMS Inventory Monitoring', pills:[], direction:null,
+    desc:'The pharmacy management system monitors on-hand stock against reorder thresholds. When Metformin falls below par, an automatic trigger initiates the order cycle. No EDI at this step.',
+    overview:{ keyvals:[{k:'Trigger',v:'On-hand < reorder threshold'},{k:'System',v:'PMS (QS/1, PioneerRx)'},{k:'Pharmacist touch',v:'< 2 min review',cls:'green'},{k:'EDI generated',v:'None'}], note:{title:'What happens here',text:'Perpetual inventory tracks every dispensed unit. When Metformin 500mg hits the reorder point, the PMS queues a purchase recommendation for pharmacist review before releasing to OrderInsite.'}, items:null },
+    edi:{ raw:null, note:'No EDI transaction at this step. Inventory trigger is internal to the pharmacy management system.' }, json:null },
+  { num:2, icon:'🧠', label:'OrderInsite Optimization', pills:[], direction:null,
+    desc:'OrderInsite analyzes demand signals, GCR compliance ratios, rebate structures, and multi-supplier pricing to build the optimal order recommendation.',
+    overview:{ keyvals:[{k:'GCR ratio checked',v:'Generics Compliance Rate'},{k:'Suppliers evaluated',v:'McKesson · Cardinal · Cencora'},{k:'Output',v:'Optimized order manifest'},{k:'EDI generated',v:'None'}], note:{title:'The intelligence layer',text:'Where the economics are determined — not just "buy 100 units" but "buy from McKesson because the rebate under contract MCK-CONTRACT-2026 makes the effective unit cost lower at this volume." The 850 in Step 3 is the output of this calculation.'}, items:null },
+    edi:{ raw:null, note:'No EDI at this step. OrderInsite is an internal optimization engine. Its output populates the 850 fields in Step 3.' }, json:null },
+  { num:3, icon:'📤', label:'EDI 850 · Purchase Order', pills:['850'], direction:'Kinney Drugs → McKesson',
+    desc:'The optimized order is transmitted to McKesson as an EDI 850 Purchase Order — the order of record that all downstream transactions reference.',
+    overview:{ keyvals:[{k:'Transaction',v:'EDI 850'},{k:'Direction',v:'Kinney → McKesson'},{k:'PO Number',v:'PO-20260316-042'},{k:'Contract Ref',v:'MCK-CONTRACT-2026'},{k:'Deliver By',v:'2026-03-17'}], note:{title:'Why every field matters',text:'The PO Number becomes the reference key for every subsequent transaction — the 855, 856, 810, and 820 all reference PO-20260316-042. The contract reference tells McKesson which pricing to apply. The DTM*002 ship-by date triggers warehouse SLA commitments.'}, items:[{line:'1',ndc:'NDC00093104801',desc:'Metformin HCl 500mg Tablets',qty:'100',uom:'EA',price:'$12.50',total:'$1,250.00'},{line:'2',ndc:'NDC00093108505',desc:'Lisinopril 10mg Tablets',qty:'50',uom:'EA',price:'$8.75',total:'$437.50'},{line:'',ndc:'',desc:'',qty:'150',uom:'',price:'Total',total:'$1,687.50',isTotal:true}] },
+    edi:{ raw:`ISA*00*          *00*          *ZZ*KINNEY         *ZZ*MCKESSON       *260316*0830*^*00501*000000001*0*P*>~\nGS*PO*KINNEY*MCKESSON*20260316*0830*1*X*005010~\nST*850*0001~\nBEG*00*SA*PO-20260316-042**20260316~\nREF*DP*042~\nREF*CT*MCK-CONTRACT-2026~\nDTM*002*20260317~\nN1*BY*Kinney Drugs Inc*92*KINNEY~\nN3*1000 Northern Blvd~\nN4*Great Neck*NY*11021~\nN1*ST*Kinney Drugs Store 042*92*KINNEY-042~\nN3*200 Pharmacy Ave~\nN4*Gouverneur*NY*13642~\nN1*SE*McKesson Drug Company*91*MCK~\nPO1*1*100*EA*12.50**IN*NDC00093104801*VN*METT500T~\nPID*F****Metformin HCl 500mg Tablets~\nPO1*2*50*EA*8.75**IN*NDC00093108505*VN*LISIN10T~\nPID*F****Lisinopril 10mg Tablets~\nCTT*2*150~\nSE*19*0001~\nGE*1*1~\nIEA*1*000000001~`, note:'BEG = PO number and date. REF*CT = contract reference. N1*BY = buyer, N1*ST = ship-to, N1*SE = seller. PO1 = line item. CTT = control totals.' },
+    json:`{\n  "interchange": {\n    "senderId": "KINNEY",\n    "receiverId": "MCKESSON",\n    "date": "2026-03-16",\n    "environment": "production"\n  },\n  "purchaseOrder": {\n    "header": {\n      "purchaseOrderNumber": "PO-20260316-042",\n      "orderType": "standalone",\n      "purchaseOrderDate": "2026-03-16",\n      "totalLineItems": 2,\n      "totalQuantity": 150\n    },\n    "references": [\n      { "qualifier": "department", "value": "042" },\n      { "qualifier": "contractNumber", "value": "MCK-CONTRACT-2026" }\n    ],\n    "parties": [\n      { "role": "buyer", "name": "Kinney Drugs Inc", "id": "KINNEY" },\n      { "role": "shipTo", "name": "Kinney Drugs Store 042", "id": "KINNEY-042" },\n      { "role": "seller", "name": "McKesson Drug Company", "id": "MCK" }\n    ],\n    "lineItems": [\n      { "lineNumber": "1", "quantity": 100, "unitPrice": 12.50, "lineTotal": 1250.00, "ndc": "NDC00093104801", "description": "Metformin HCl 500mg Tablets" },\n      { "lineNumber": "2", "quantity": 50, "unitPrice": 8.75, "lineTotal": 437.50, "ndc": "NDC00093108505", "description": "Lisinopril 10mg Tablets" }\n    ]\n  }\n}` },
+  { num:4, icon:'✅', label:'EDI 855 · PO Acknowledgment', pills:['855'], direction:'McKesson → Kinney Drugs',
+    desc:'McKesson responds with a Purchase Order Acknowledgment. Each line is confirmed as accepted, modified, or rejected.',
+    overview:{ keyvals:[{k:'Transaction',v:'EDI 855'},{k:'Direction',v:'McKesson → Kinney'},{k:'References PO',v:'PO-20260316-042'},{k:'McKesson Order #',v:'MCK-ORD-88421'},{k:'Line 1 status',v:'IA — Accepted',cls:'green'},{k:'Line 2 status',v:'IA — Accepted',cls:'green'}], note:{title:'ACK codes to know',text:'IA = Item Accepted. IB = Item accepted with changes (watch for price or quantity changes). IR = Item Rejected — triggers substitution workflow. A missing 855 is often treated as silent acceptance, which is a data quality trap in high-volume environments.'}, items:[{line:'1',ndc:'NDC00093104801',desc:'Metformin HCl 500mg Tablets',qty:'100',uom:'EA',price:'$12.50',total:'IA — Accepted'},{line:'2',ndc:'NDC00093108505',desc:'Lisinopril 10mg Tablets',qty:'50',uom:'EA',price:'$8.75',total:'IA — Accepted'}] },
+    edi:{ raw:`ISA*00*          *00*          *ZZ*MCKESSON       *ZZ*KINNEY         *260316*0902*^*00501*000000002*0*P*>~\nGS*PR*MCKESSON*KINNEY*20260316*0902*2*X*005010~\nST*855*0001~\nBAK*00*AC*PO-20260316-042*20260316**SP*MCK-ORD-88421~\nDTM*011*20260317~\nN1*SE*McKesson Drug Company*91*MCK~\nN1*BY*Kinney Drugs Store 042*92*KINNEY-042~\nPO1*1*100*EA*12.50**IN*NDC00093104801~\nACK*IA*100*EA~\nPO1*2*50*EA*8.75**IN*NDC00093108505~\nACK*IA*50*EA~\nCTT*2*150~\nSE*13*0001~\nGE*1*2~\nIEA*1*000000002~`, note:'BAK = beginning acknowledgment (AC = accepted). ACK segment = line-level status code. MCK-ORD-88421 is McKesson\'s internal order number — referenced by the 856 and 810.' },
+    json:`{\n  "acknowledgment": {\n    "purpose": "accepted",\n    "originalPONumber": "PO-20260316-042",\n    "sellerOrderNumber": "MCK-ORD-88421",\n    "lineItems": [\n      { "lineNumber": "1", "quantity": 100, "unitPrice": 12.50, "acknowledgmentCode": "IA", "status": "accepted as ordered" },\n      { "lineNumber": "2", "quantity": 50, "unitPrice": 8.75, "acknowledgmentCode": "IA", "status": "accepted as ordered" }\n    ]\n  }\n}` },
+  { num:5, icon:'🚚', label:'EDI 856 · Advance Ship Notice', pills:['856'], direction:'McKesson → Kinney Drugs',
+    desc:'When the shipment leaves McKesson\'s DC, an 856 ASN is transmitted with carton-level detail including lot numbers and expiration dates — critical for pharma receiving and DSCSA traceability.',
+    overview:{ keyvals:[{k:'Transaction',v:'EDI 856'},{k:'Direction',v:'McKesson → Kinney'},{k:'Ship date',v:'2026-03-16'},{k:'Expected delivery',v:'2026-03-17'},{k:'Carrier',v:'UPS Ground'},{k:'Tracking',v:'PRO-88421'}], note:{title:'Why lot and expiry matter',text:'The 856 carries lot numbers and expiration dates — required for DSCSA traceability. When the pharmacy scans receiving, they match physical cartons against these 856 values. Any mismatch is flagged before the product hits the shelf.'}, items:[{line:'1',ndc:'NDC00093104801',desc:'Metformin HCl 500mg · Lot: LOT-MET-2025-441',qty:'100',uom:'EA',price:'Exp: 2027-08-01',total:''},{line:'2',ndc:'NDC00093108505',desc:'Lisinopril 10mg · Lot: LOT-LIS-2025-892',qty:'50',uom:'EA',price:'Exp: 2027-06-01',total:''}] },
+    edi:{ raw:`ISA*00*          *00*          *ZZ*MCKESSON       *ZZ*KINNEY         *260316*1445*^*00501*000000003*0*P*>~\nGS*SH*MCKESSON*KINNEY*20260316*1445*3*X*005010~\nST*856*0001~\nBSN*00*MCK-ASN-88421*20260316*1445*0001~\nDTM*011*20260316~\nDTM*067*20260317~\nN1*SF*McKesson DC Irving*91*MCK-DC-001~\nN1*ST*Kinney Drugs Store 042*92*KINNEY-042~\nHL*1**S~\nTD5**2*UPSS*UPS Ground~\nREF*BM*PRO-88421~\nHL*2*1*O~\nPRF*PO-20260316-042*20260316~\nHL*3*2*I~\nLIN*1*IN*NDC00093104801~\nSN1**100*EA~\nPID*F****Metformin HCl 500mg Tablets~\nREF*LT*LOT-MET-2025-441~\nDTM*036*20270801~\nHL*4*2*I~\nLIN*2*IN*NDC00093108505~\nSN1**50*EA~\nPID*F****Lisinopril 10mg Tablets~\nREF*LT*LOT-LIS-2025-892~\nDTM*036*20270601~\nCTT*2~\nSE*25*0001~\nGE*1*3~\nIEA*1*000000003~`, note:'BSN = beginning shipment notice. HL hierarchy: S=shipment, O=order, I=item. REF*LT = lot number. DTM*036 = expiration date. The most complex EDI in the set due to HL hierarchy.' },
+    json:`{\n  "shipmentNotice": {\n    "asnNumber": "MCK-ASN-88421",\n    "shipDate": "2026-03-16",\n    "expectedDelivery": "2026-03-17",\n    "carrier": "UPS Ground",\n    "tracking": "PRO-88421",\n    "lineItems": [\n      { "ndc": "NDC00093104801", "description": "Metformin HCl 500mg", "quantityShipped": 100, "lotNumber": "LOT-MET-2025-441", "expiration": "2027-08-01" },\n      { "ndc": "NDC00093108505", "description": "Lisinopril 10mg", "quantityShipped": 50, "lotNumber": "LOT-LIS-2025-892", "expiration": "2027-06-01" }\n    ]\n  }\n}` },
+  { num:6, icon:'📦', label:'Receiving & Reconciliation', pills:[], direction:null,
+    desc:'Shipment arrives at Kinney Store #042. Staff scan each item and the PMS matches physical receipt against the 856 ASN. Discrepancies are flagged automatically.',
+    overview:{ keyvals:[{k:'Delivery date',v:'2026-03-17'},{k:'Expected cartons',v:'2'},{k:'Received cartons',v:'2',cls:'green'},{k:'Line 1',v:'100/100 — clean',cls:'green'},{k:'Line 2',v:'50/50 — clean',cls:'green'},{k:'EDI generated',v:'None (clean receive)'}], note:{title:'What breaks here',text:'If physical count doesn\'t match the 856, the system flags a discrepancy. Common causes: short ship, damaged product, substitution not reflected in ASN. Unresolved discrepancies become chargeback disputes in Step 8.'}, items:null },
+    edi:{ raw:null, note:'No EDI on a clean receive. Discrepancies are typically handled via exception workflows or portal contact with McKesson.' }, json:null },
+  { num:7, icon:'🧾', label:'EDI 810 · Invoice', pills:['810'], direction:'McKesson → Kinney Drugs',
+    desc:'McKesson issues the invoice the day after shipment. The 810 is matched against the 850 PO and confirmed 856 receipt. Price mismatches against the contract rate trigger chargeback claims.',
+    overview:{ keyvals:[{k:'Transaction',v:'EDI 810'},{k:'Direction',v:'McKesson → Kinney'},{k:'Invoice #',v:'INV-MCK-88421'},{k:'Invoice date',v:'2026-03-17'},{k:'Payment due',v:'2026-03-31'},{k:'Freight charge',v:'$12.00'}], note:{title:'The chargeback trigger',text:'The 810 shows McKesson billed $12.50/unit for Metformin. Kinney\'s Teva contract entitles them to $10.25/unit. The $2.25 delta × 100 units = $225 chargeback claim filed in Step 8 via 844.'}, items:[{line:'1',ndc:'NDC00093104801',desc:'Metformin HCl 500mg Tablets',qty:'100',uom:'EA',price:'$12.50',total:'$1,250.00'},{line:'2',ndc:'NDC00093108505',desc:'Lisinopril 10mg Tablets',qty:'50',uom:'EA',price:'$8.75',total:'$437.50'},{line:'',ndc:'',desc:'Freight',qty:'',uom:'',price:'',total:'$12.00'},{line:'',ndc:'',desc:'',qty:'',uom:'',price:'Invoice Total',total:'$1,699.50',isTotal:true}] },
+    edi:{ raw:`ISA*00*          *00*          *ZZ*MCKESSON       *ZZ*KINNEY         *260317*0700*^*00501*000000004*0*P*>~\nGS*IN*MCKESSON*KINNEY*20260317*0700*4*X*005010~\nST*810*0001~\nBIG*20260317*INV-MCK-88421*20260316*PO-20260316-042~\nREF*CT*MCK-CONTRACT-2026~\nDTM*001*20260317~\nDTM*007*20260331~\nN1*SE*McKesson Drug Company*91*MCK~\nN1*BT*Kinney Drugs Inc*92*KINNEY~\nIT1*1*100*EA*12.50**IN*NDC00093104801~\nPID*F****Metformin HCl 500mg Tablets~\nIT1*2*50*EA*8.75**IN*NDC00093108505~\nPID*F****Lisinopril 10mg Tablets~\nTDS*168750~\nSAC*C*H850**1200~\nCTT*2~\nSE*17*0001~\nGE*1*4~\nIEA*1*000000004~`, note:'BIG = beginning of invoice (invoice date, #, PO date, PO#). IT1 = invoice line item. TDS = total in cents (168750 = $1,687.50). SAC = freight charge. DTM*007 = payment due date.' },
+    json:`{\n  "invoice": {\n    "invoiceNumber": "INV-MCK-88421",\n    "invoiceDate": "2026-03-17",\n    "purchaseOrderNumber": "PO-20260316-042",\n    "paymentDueDate": "2026-03-31",\n    "lineItems": [\n      { "lineNumber": "1", "quantity": 100, "unitPrice": 12.50, "lineTotal": 1250.00, "ndc": "NDC00093104801" },\n      { "lineNumber": "2", "quantity": 50, "unitPrice": 8.75, "lineTotal": 437.50, "ndc": "NDC00093108505" }\n    ],\n    "charges": [{ "type": "freight", "amount": 12.00 }],\n    "invoiceTotal": 1699.50\n  }\n}` },
+  { num:8, icon:'📊', label:'EDI 844/849/867 · Chargebacks', pills:['844','849','867'], direction:'Bidirectional',
+    desc:'Kinney files a chargeback for the Metformin price delta ($12.50 billed vs $10.25 contracted = $225 on 100 units). McKesson validates and responds. The 867 reports actual dispensed quantities back to the manufacturer.',
+    overview:{ keyvals:[{k:'844 — Claim',v:'$225.00 (Metformin)'},{k:'Contract ref',v:'TEVA-CONTRACT-2026'},{k:'Billed price',v:'$12.50/unit'},{k:'Contract price',v:'$10.25/unit'},{k:'849 — Response',v:'Accepted',cls:'green'},{k:'867 — Units reported',v:'150 units dispensed'}], note:{title:'The closed loop',text:'867 Product Transfer Report sends actual dispensed quantities back to Teva via McKesson. Manufacturers use this to validate 844 claims and track market share. It also feeds back into OrderInsite demand sensing at Step 2 — completing the cycle.'}, items:null },
+    edi:{ raw:`--- EDI 844 · Chargeback Claim ---\nISA*00*          *00*          *ZZ*KINNEY         *ZZ*MCKESSON       *260318*0900*^*00501*000000005*0*P*>~\nGS*PT*KINNEY*MCKESSON*20260318*0900*5*X*005010~\nST*844*0001~\nBHT*0001*00*CB-20260318-001*20260318*0900~\nN1*SE*McKesson Drug Company*91*MCK~\nN1*BY*Kinney Drugs Store 042*92*KINNEY-042~\nN1*MF*Teva Pharmaceuticals*1*660537006~\nLIN*1*IN*NDC00093104801~\nSLN*1**I*100*EA*12.50~\nSLN*1**C*100*EA*10.25~\nAMT*T*225~\nREF*CR*TEVA-CONTRACT-2026-GENERIC~\nCTT*1~\nSE*13*0001~\nGE*1*5~\nIEA*1*000000005~\n\n--- EDI 849 · Response ---\nISA*00*          *00*          *ZZ*MCKESSON       *ZZ*KINNEY         *260319*1100*^*00501*000000006*0*P*>~\nGS*PT*MCKESSON*KINNEY*20260319*1100*6*X*005010~\nST*849*0001~\nBHT*0001*00*CB-20260318-001*20260319*1100~\nLIN*1*IN*NDC00093104801~\nSLN*1**A*100*EA~\nAMT*T*225~\nCTT*1~\nSE*10*0001~\nGE*1*6~\nIEA*1*000000006~\n\n--- EDI 867 · Resale Report ---\nISA*00*          *00*          *ZZ*KINNEY         *ZZ*MCKESSON       *260320*0800*^*00501*000000007*0*P*>~\nGS*PT*KINNEY*MCKESSON*20260320*0800*7*X*005010~\nST*867*0001~\nBHT*0001*00*PTR-20260320-042*20260320*0800~\nLIN*1*IN*NDC00093104801~\nQTY*57*100*EA~\nLIN*2*IN*NDC00093108505~\nQTY*57*50*EA~\nCTT*2~\nSE*11*0001~\nGE*1*7~\nIEA*1*000000007~`, note:'844: SLN*I = invoiced amount, SLN*C = contract amount, AMT*T = total claim. 849: SLN*A = accepted. 867: QTY*57 = quantity sold. The 867 closes the loop back to demand sensing.' },
+    json:`{\n  "chargebackClaim_844": {\n    "claimNumber": "CB-20260318-001",\n    "lineItems": [{ "ndc": "NDC00093104801", "quantity": 100, "invoicedPrice": 12.50, "contractPrice": 10.25, "claimAmount": 225.00 }],\n    "totalClaim": 225.00\n  },\n  "chargebackResponse_849": {\n    "referencesClaimNumber": "CB-20260318-001",\n    "status": "accepted",\n    "creditApproved": 225.00\n  },\n  "resaleReport_867": {\n    "lineItems": [\n      { "ndc": "NDC00093104801", "quantitySold": 100 },\n      { "ndc": "NDC00093108505", "quantitySold": 50 }\n    ]\n  }\n}` },
+  { num:9, icon:'💳', label:'EDI 820 · Payment Remittance', pills:['820'], direction:'Kinney Drugs → McKesson',
+    desc:'Kinney remits the net amount due — invoice total minus approved chargeback credit — and tells McKesson exactly which invoices are being paid and how credits were applied.',
+    overview:{ keyvals:[{k:'Transaction',v:'EDI 820'},{k:'Direction',v:'Kinney → McKesson'},{k:'Invoice total',v:'$1,699.50'},{k:'Chargeback credit',v:'-$225.00'},{k:'Net payment',v:'$1,474.50',cls:'green'},{k:'Method',v:'ACH'}], note:{title:'Closing the loop',text:'The 820 is the financial close of the entire cycle. When McKesson posts this, PO-20260316-042 is fully settled. Any unresolved discrepancy at this point becomes an aged dispute — the most expensive outcome in the cycle to resolve.'}, items:null },
+    edi:{ raw:`ISA*00*          *00*          *ZZ*KINNEY         *ZZ*MCKESSON       *260331*0900*^*00501*000000008*0*P*>~\nGS*RA*KINNEY*MCKESSON*20260331*0900*8*X*005010~\nST*820*0001~\nBPR*C*147450*ACH*CTX*01*021000021*DA*987654321*01*111000025*DA*123456789*20260331~\nTRN*1*PAY-20260331-042*1111000025~\nDTM*007*20260331~\nN1*PR*Kinney Drugs Inc*92*KINNEY~\nN1*PE*McKesson Drug Company*91*MCK~\nENT*1~\nRMR*IV*INV-MCK-88421*PI*169950~\nADX*-22500*DM~\nNTE**Metformin chargeback CB-20260318-001 applied~\nCTT*1~\nSE*13*0001~\nGE*1*8~\nIEA*1*000000008~`, note:'BPR = payment (147450 cents = $1,474.50, ACH routing/account). TRN = trace number. RMR = invoice reference. ADX*DM = chargeback deduction. NTE = free-text note.' },
+    json:`{\n  "paymentRemittance": {\n    "paymentNumber": "PAY-20260331-042",\n    "paymentDate": "2026-03-31",\n    "method": "ACH",\n    "invoices": [{\n      "invoiceNumber": "INV-MCK-88421",\n      "invoiceAmount": 1699.50,\n      "adjustments": [{ "type": "chargebackCredit", "amount": -225.00, "reference": "CB-20260318-001" }],\n      "netPaid": 1474.50\n    }],\n    "totalPayment": 1474.50\n  }\n}` }
+];
+
+function initTrainer() {
+  trainerInit = true;
+  goTo(0);
+}
+
+function pillHtml(p) { return '<span class="edi-pill pill-'+p+'">'+p+'</span>'; }
+
+function renderSidebar() {
+  var sb = document.getElementById('sidebar');
+  var html = '<div class="sb-section">Transaction Flow</div>';
+  STEPS.forEach(function(s, i) {
+    html += '<button class="step-btn '+(i===currentStep?'active':'')+'" onclick="goTo('+i+')">';
+    html += '<div class="step-num">'+s.num+'</div>';
+    html += '<div class="step-info">';
+    html += '<div class="step-label">'+s.label+'</div>';
+    html += '<div class="step-edi">'+(s.pills.length ? s.pills.map(function(p){return 'EDI '+p;}).join(' · ') : (s.direction||'Internal'))+'</div>';
+    html += '</div></button>';
+    if (i < STEPS.length-1) html += '<div class="connector"></div>';
+  });
+  sb.innerHTML = html;
+}
+
+function renderHeader() {
+  var s = STEPS[currentStep];
+  var pills = s.pills.map(pillHtml).join(' ');
+  var dir = s.direction ? '<span style="font-size:12px;color:var(--muted);font-family:var(--mono);">'+s.direction+'</span>' : '';
+  document.getElementById('step-header').innerHTML =
+    '<div class="step-header-top"><span class="step-icon">'+s.icon+'</span><span class="step-title">'+s.label+'</span>'+pills+dir+'</div>'+
+    '<div class="step-desc">'+s.desc+'</div>';
+}
+
+function renderOverview() {
+  var s = STEPS[currentStep]; var ov = s.overview; var html = '';
+  if (ov.note) html += '<div class="flow-note"><h4>'+ov.note.title+'</h4><p>'+ov.note.text+'</p></div>';
+  html += '<div class="overview-grid">';
+  html += '<div class="info-card"><h3>Details</h3>';
+  ov.keyvals.forEach(function(kv){ html += '<div class="kv-row"><span class="kv-key">'+kv.k+'</span><span class="kv-val '+(kv.cls||'')+'">'+kv.v+'</span></div>'; });
+  html += '</div>';
+  if (ov.items) {
+    html += '<div class="info-card"><h3>Line Items</h3><table class="line-items"><thead><tr><th>#</th><th>NDC</th><th>Description</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>';
+    ov.items.forEach(function(item){ html += '<tr class="'+(item.isTotal?'total-row':'')+'"><td>'+item.line+'</td><td class="mono">'+item.ndc+'</td><td>'+item.desc+'</td><td>'+item.qty+'</td><td>'+item.price+'</td><td>'+item.total+'</td></tr>'; });
+    html += '</tbody></table></div>';
+  } else {
+    html += '<div class="info-card" style="display:flex;align-items:center;justify-content:center;min-height:100px;"><span style="font-size:12px;color:var(--dim);">'+(s.pills.length===0?'No EDI at this step':'See Raw EDI tab')+'</span></div>';
+  }
+  html += '</div>';
+  document.getElementById('tab-overview').innerHTML = html;
+}
+
+function syntaxEDI(raw) {
+  return raw.split('\n').map(function(line) {
+    if (line.startsWith('---')) return '<span style="color:var(--dim);font-style:italic;">'+line+'</span>';
+    var tilde = line.endsWith('~') ? '<span style="color:var(--dim)">~</span>' : '';
+    var body = line.replace(/~$/,'');
+    var parts = body.split('*');
+    var segId = '<span class="seg-id">'+parts[0]+'</span>';
+    var rest = parts.slice(1).map(function(p){
+      if (/^NDC\d/.test(p)) return '<span class="seg-ndc">'+p+'</span>';
+      if (/^[A-Z]{2,3}$/.test(p) && p.length<=3) return '<span class="seg-qual">'+p+'</span>';
+      return '<span class="seg-val">'+p+'</span>';
+    }).join('<span style="color:var(--dim)">*</span>');
+    return segId+(rest?'<span style="color:var(--dim)">*</span>'+rest:'')+tilde;
+  }).join('\n');
+}
+
+function renderEDI() {
+  var s = STEPS[currentStep]; var ed = s.edi; var html = '';
+  if (!ed.raw) {
+    html = '<div class="flow-note" style="border-left-color:var(--dim);"><h4 style="color:var(--muted);">No EDI Transaction</h4><p>'+ed.note+'</p></div>';
+  } else {
+    html = '<div class="edi-toolbar"><span>Segment terminator: <b style="color:var(--c-amber-stroke)">~</b></span><span style="margin-left:12px;">Element separator: <b style="color:var(--dim)">*</b></span></div>';
+    html += '<div class="edi-wrap"><div class="edi-raw">'+syntaxEDI(ed.raw)+'</div></div>';
+    if (ed.note) html += '<div class="flow-note" style="margin-top:14px;border-left-color:var(--dim);"><h4 style="color:var(--muted);">Segment Guide</h4><p>'+ed.note+'</p></div>';
+  }
+  document.getElementById('tab-edi').innerHTML = html;
+}
+
+function syntaxJSON(json) {
+  return json
+    .replace(/("[\w]+"):/g,'<span class="jk">$1</span>:')
+    .replace(/: ("([^"]*)")/g,function(m,full,val){return ': <span class="js">"'+val+'"</span>';})
+    .replace(/: (\d+\.?\d*)/g,': <span class="jn">$1</span>')
+    .replace(/: (true|false|null)/g,': <span class="jb">$1</span>');
+}
+
+function renderJSON() {
+  var s = STEPS[currentStep]; var html = '';
+  if (!s.json) {
+    html = '<div class="flow-note" style="border-left-color:var(--dim);"><h4 style="color:var(--muted);">No JSON Output</h4><p>No EDI at this step.</p></div>';
+  } else {
+    html = '<div class="json-wrap"><div class="json-raw">'+syntaxJSON(s.json)+'</div></div>';
+  }
+  document.getElementById('tab-json').innerHTML = html;
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
+  var idx = ['overview','edi','json'].indexOf(tab);
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+function updateNav() {
+  document.getElementById('btn-prev').disabled = currentStep===0;
+  document.getElementById('btn-next').disabled = currentStep===STEPS.length-1;
+  document.getElementById('nav-progress').textContent = 'Step '+(currentStep+1)+' of '+STEPS.length;
+}
+
+function goTo(idx) {
+  currentStep = idx;
+  renderSidebar(); renderHeader(); renderOverview(); renderEDI(); renderJSON();
+  switchTab(currentTab); updateNav();
+}
+
+function navigate(dir) { var n=currentStep+dir; if(n>=0&&n<STEPS.length) goTo(n); }
+
+/* ════════════════════════════════════
+   TRANSLATOR
+════════════════════════════════════ */
+var SAMPLE = "ISA*00*          *00*          *ZZ*KINNEY         *ZZ*MCKESSON       *260316*0830*^*00501*000000001*0*P*>~GS*PO*KINNEY*MCKESSON*20260316*0830*1*X*005010~ST*850*0001~BEG*00*SA*PO-20260316-042**20260316~REF*DP*042~REF*CT*MCK-CONTRACT-2026~DTM*002*20260317~N1*BY*Kinney Drugs Inc*92*KINNEY~N3*1000 Northern Blvd~N4*Great Neck*NY*11021~N1*ST*Kinney Drugs Store 042*92*KINNEY-042~N3*200 Pharmacy Ave~N4*Gouverneur*NY*13642~N1*SE*McKesson Drug Company*91*MCK~PO1*1*100*EA*12.50**IN*NDC00093104801*VN*METT500T~PID*F****Metformin HCl 500mg Tablets~PO1*2*50*EA*8.75**IN*NDC00093108505*VN*LISIN10T~PID*F****Lisinopril 10mg Tablets~CTT*2*150~SE*19*0001~GE*1*1~IEA*1*000000001~";
+
+var REF_Q={DP:'department',CT:'contractNumber',VR:'vendorId',PO:'purchaseOrderNumber',CO:'customerOrderNumber',MA:'marketingGroupId',ZZ:'mutuallyDefined'};
+var DTM_Q={'002':'deliveryRequestedDate','011':'shipDate','037':'shipNotBefore','038':'shipNotAfter','010':'requestedPickup'};
+var N1_Q={BT:'billTo',ST:'shipTo',SE:'seller',BY:'buyer',RI:'remitTo',VN:'vendor'};
+var UOM_Q={EA:'each',CA:'case',BX:'box',LB:'pound',OZ:'ounce',KG:'kilogram',UN:'unit',BT:'bottle',VI:'vial'};
+var PO1_ID={IN:'buyersItemNumber',VN:'vendorsItemNumber',UP:'upc',BP:'buyersPartNumber',MG:'manufacturersPartNumber',SK:'sku',DR:'drugCode'};
+var BEG_TYPE={SA:'standalone',OS:'original',RO:'rush',CN:'confirming',PR:'proposed',RL:'release'};
+
+function fmtDate(d){ if(!d||d.length<8) return d||''; return d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6,8); }
+
+function parseSegs(raw) {
+  var segs=[]; var parts=raw.replace(/[\r\n]/g,'').trim().split('~');
+  for(var i=0;i<parts.length;i++){ var s=parts[i].trim(); if(s.length>0) segs.push(s.split('*')); }
+  return segs;
+}
+
+// Returns a reason string if the input does not look like an X12 message, else null.
+function x12Problem(raw, segs) {
+  if(raw.indexOf('~')<0) return 'No ~ segment terminator found';
+  var env=false;
+  for(var i=0;i<segs.length;i++){
+    var id=segs[i][0];
+    if(!/^[A-Z][A-Z0-9]{1,2}$/.test(id)) return 'Unrecognized segment ID "'+id.slice(0,20)+'" in segment '+(i+1);
+    if(id==='ISA'||id==='GS'||id==='ST') env=true;
+  }
+  if(!env) return 'No ISA, GS, or ST envelope segment found';
+  return null;
+}
+
+function doTranslate() {
+  var raw=document.getElementById('edi-in').value;
+  if(!raw||!raw.trim()){ setTS('paste EDI first',false); return; }
+  var segs; try{ segs=parseSegs(raw); }catch(e){ setTS('parse error',false); setOut('// Error: '+e.message); return; }
+  if(!segs.length){ setTS('no segments found',false); setOut('// No ~ terminated segments found.'); return; }
+  var problem=x12Problem(raw,segs);
+  if(problem){ setTS('not an X12 message',false); setOut('// Error: '+problem+'.\n// Expected an X12 850: ISA/GS/ST envelope, elements separated by *, segments ending in ~.'); return; }
+  try {
+    var r={interchange:{},functionalGroup:{},purchaseOrder:{header:{},references:[],dates:[],parties:[],lineItems:[]}};
+    var po=r.purchaseOrder; var i=0;
+    while(i<segs.length){
+      var s=segs[i]; var id=s[0];
+      if(id==='ISA'){ r.interchange={senderId:(s[6]||'').trim(),receiverId:(s[8]||'').trim(),date:fmtDate(s[9]),controlNumber:s[13],environment:s[15]==='T'?'test':'production'}; }
+      else if(id==='GS'){ r.functionalGroup={functionalId:s[1],senderCode:s[2],receiverCode:s[3],date:fmtDate(s[4]),controlNumber:s[6],version:s[8]}; }
+      else if(id==='BEG'){ po.header={transactionPurpose:s[1],orderType:BEG_TYPE[s[2]]||s[2],purchaseOrderNumber:s[3],purchaseOrderDate:fmtDate(s[5])}; }
+      else if(id==='REF'){ po.references.push({qualifier:REF_Q[s[1]]||s[1],value:s[2]||''}); }
+      else if(id==='DTM'){ po.dates.push({qualifier:DTM_Q[s[1]]||s[1],date:fmtDate(s[2])}); }
+      else if(id==='N1'){
+        var party={role:N1_Q[s[1]]||s[1],name:s[2]||''};
+        if(s[3]) party.idQualifier=s[3]; if(s[4]) party.id=s[4];
+        i++;
+        while(i<segs.length&&(['N2','N3','N4'].indexOf(segs[i][0])>-1)){
+          var ns=segs[i];
+          if(ns[0]==='N2') party.additionalName=ns[1];
+          if(ns[0]==='N3') party.address=ns[1]+(ns[2]?' '+ns[2]:'');
+          if(ns[0]==='N4'){ party.city=ns[1]; party.state=ns[2]; party.postalCode=ns[3]; }
+          i++;
+        }
+        po.parties.push(party); continue;
+      }
+      else if(id==='PO1'){
+        var item={lineNumber:s[1],quantity:parseFloat(s[2])||0,unitOfMeasure:UOM_Q[s[3]]||s[3],unitPrice:parseFloat(s[4])||0};
+        item.lineTotal=Math.round(item.quantity*item.unitPrice*100)/100;
+        var k=5; while(k+1<s.length){ var q=s[k],v=s[k+1]; if(q&&PO1_ID[q]) item[PO1_ID[q]]=v; k+=2; }
+        i++;
+        while(i<segs.length&&segs[i][0]==='PID'){ item.description=segs[i][5]||segs[i][4]||segs[i][3]||''; i++; }
+        po.lineItems.push(item); continue;
+      }
+      else if(id==='CTT'){ po.header.totalLineItems=parseInt(s[1])||0; if(s[2]) po.header.totalQuantity=parseFloat(s[2]); }
+      i++;
+    }
+    setOut(JSON.stringify(r,null,2));
+    setTS(segs.length+' segments → OK',true);
+  } catch(e){ setTS('translation error',false); setOut('// Error: '+e.message); }
+}
+
+function setTS(msg,ok) {
+  var el=document.getElementById('tstatus');
+  el.textContent=msg; el.className='tstatus '+(ok?'ok':'err');
+}
+function setOut(txt){ document.getElementById('json-out').textContent=txt; }
+
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('btn-translate').addEventListener('click',doTranslate);
+  document.getElementById('btn-sample').addEventListener('click',function(){
+    document.getElementById('edi-in').value=SAMPLE;
+    setOut(''); document.getElementById('tstatus').textContent=''; document.getElementById('tstatus').className='tstatus';
+  });
+  document.getElementById('btn-copy').addEventListener('click',function(){
+    var t=document.getElementById('json-out').textContent;
+    if(!t||t==='{ }'){ setTS('nothing to copy',false); return; }
+    navigator.clipboard.writeText(t).then(function(){ setTS('copied',true); });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacy EDI · Player Map</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --surface2: #f1efe8;
+    --border: rgba(0,0,0,0.10);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --muted: #5f5e5a;
+    --dim: #9c9a92;
+    --sans: -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'SF Mono', 'Fira Code', monospace;
+
+    --c-teal-fill: #E1F5EE; --c-teal-stroke: #0F6E56; --c-teal-text: #085041;
+    --c-blue-fill: #E6F1FB; --c-blue-stroke: #185FA5; --c-blue-text: #0C447C;
+    --c-coral-fill: #FAECE7; --c-coral-stroke: #993C1D; --c-coral-text: #712B13;
+    --c-amber-fill: #FAEEDA; --c-amber-stroke: #854F0B; --c-amber-text: #633806;
+    --c-purple-fill: #EEEDFE; --c-purple-stroke: #534AB7; --c-purple-text: #3C3489;
+    --c-gray-fill: #F1EFE8; --c-gray-stroke: #5F5E5A; --c-gray-text: #444441;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d0f12; --surface: #141720; --surface2: #1c2030;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.16);
+      --text: #e2e8f0; --muted: #7a84a0; --dim: #4a5270;
+
+      --c-teal-fill: #085041; --c-teal-stroke: #5DCAA5; --c-teal-text: #9FE1CB;
+      --c-blue-fill: #0C447C; --c-blue-stroke: #85B7EB; --c-blue-text: #B5D4F4;
+      --c-coral-fill: #712B13; --c-coral-stroke: #F0997B; --c-coral-text: #F5C4B3;
+      --c-amber-fill: #633806; --c-amber-stroke: #EF9F27; --c-amber-text: #FAC775;
+      --c-purple-fill: #3C3489; --c-purple-stroke: #AFA9EC; --c-purple-text: #CECBF6;
+      --c-gray-fill: #444441; --c-gray-stroke: #B4B2A9; --c-gray-text: #D3D1C7;
+    }
+  }
+
+  html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 10px;
+  }
+  h1 { font-size: 28px; font-weight: 600; line-height: 1.2; margin-bottom: 8px; }
+  .subtitle { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 36px; max-width: 600px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px; margin-bottom: 24px;
+  }
+
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .fbtn {
+    font-size: 12px; font-weight: 500; padding: 6px 14px;
+    border: 1px solid var(--border2); border-radius: 99px;
+    background: transparent; color: var(--muted); cursor: pointer;
+    font-family: var(--sans); transition: all .15s;
+  }
+  .fbtn:hover { color: var(--text); border-color: var(--text); }
+  .fbtn.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  .map-wrap { overflow-x: auto; }
+  svg text { font-family: var(--sans); }
+
+  .fl { transition: opacity .25s; }
+  .fl.off { opacity: .07; }
+
+  .ng { cursor: pointer; }
+  .ng:hover rect, .ng:hover ellipse { filter: brightness(0.96); }
+
+  .info-box {
+    margin-top: 20px; padding: 16px 20px;
+    border-left: 3px solid var(--border2);
+    background: var(--surface2);
+    border-radius: 0 12px 12px 0;
+    font-size: 14px; color: var(--muted); line-height: 1.7;
+    min-height: 60px; transition: border-color .2s;
+  }
+  .info-box b { font-weight: 600; color: var(--text); }
+  .info-box.active { border-left-color: var(--c-blue-stroke); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 20px; }
+  .leg-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 12px;
+  }
+
+  .edi-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .edi-table th {
+    text-align: left; padding: 8px 12px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--dim); border-bottom: 1px solid var(--border);
+  }
+  .edi-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  .edi-table tr:last-child td { border-bottom: none; }
+  .edi-table td:first-child { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; }
+  .edi-table td:nth-child(2) { color: var(--text); }
+
+  .pill {
+    display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 500;
+    padding: 2px 8px; border-radius: 4px; margin-right: 4px;
+  }
+  .p-teal   { background: var(--c-teal-fill);   color: var(--c-teal-text); }
+  .p-coral  { background: var(--c-coral-fill);  color: var(--c-coral-text); }
+  .p-purple { background: var(--c-purple-fill); color: var(--c-purple-text); }
+  .p-gray   { background: var(--c-gray-fill);   color: var(--c-gray-text); }
+
+  .footer { margin-top: 48px; font-size: 12px; color: var(--dim); text-align: center; }
+  .backlinks { font-size: 12px; margin-bottom: 24px; color: var(--dim); }
+  .backlinks a { color: var(--muted); text-decoration: none; }
+  .backlinks a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <p class="backlinks"><a href="index.html">← Pharmacy EDI</a> · <a href="pharmacy-edi-hub.html">EDI Hub</a></p>
+
+  <p class="eyebrow">Pharmaceutical supply chain · EDI</p>
+  <h1>Who talks to whom — and how</h1>
+  <p class="subtitle">McKesson sits at the center of every financial and data flow in the pharmacy supply chain. Click any player to understand their role. Filter to isolate specific transaction flows.</p>
+
+  <div class="card">
+    <div class="filter-bar">
+      <button class="fbtn on" id="fa" onclick="sf('all',this)">All flows</button>
+      <button class="fbtn" id="fo" onclick="sf('ord',this)">Order &amp; payment</button>
+      <button class="fbtn" id="fc" onclick="sf('cb',this)">Chargeback cycle</button>
+      <button class="fbtn" id="fk" onclick="sf('con',this)">Contracting</button>
+    </div>
+
+    <div class="map-wrap">
+    <svg width="100%" viewBox="0 0 680 420" style="overflow:visible;">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <!-- Order / payment flows -->
+    <g class="fl ord-f">
+      <line x1="176" y1="200" x2="250" y2="200" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="213" y="193" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#1D9E75" font-weight="500">850 · 820</text>
+      <line x1="250" y1="216" x2="176" y2="216" stroke="#085041" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="213" y="230" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#085041" font-weight="500">855 · 856 · 810</text>
+    </g>
+
+    <!-- Chargeback flows -->
+    <g class="fl cb-f">
+      <line x1="434" y1="200" x2="508" y2="200" stroke="#D85A30" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="471" y="193" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#D85A30" font-weight="500">844 · 867</text>
+      <line x1="508" y1="216" x2="434" y2="216" stroke="#712B13" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="471" y="230" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#712B13" font-weight="500">849</text>
+      <!-- 867 relay to PBM -->
+      <path d="M434,234 Q434,290 340,290 Q280,290 280,350" fill="none" stroke="#7F77DD" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+      <text x="410" y="284" font-size="10" font-family="var(--mono)" fill="#534AB7" font-weight="500">867 relay</text>
+    </g>
+
+    <!-- Contracting flows -->
+    <g class="fl con-f">
+      <!-- GPO → McKesson -->
+      <line x1="340" y1="72" x2="340" y2="175" stroke="#BA7517" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="292" y="126" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#854F0B" font-weight="500">contract terms</text>
+      <!-- GPO → Pharmacy (dashed) -->
+      <path d="M252,50 L94,50 L94,185" fill="none" stroke="#BA7517" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+      <text x="172" y="43" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="#854F0B" font-weight="500">GPO rates</text>
+      <!-- Pharmacy → Regulator (dashed) -->
+      <path d="M94,245 L94,350" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+      <text x="108" y="300" font-size="10" font-family="var(--mono)" fill="#5F5E5A" font-weight="500">DSCSA</text>
+    </g>
+
+    <!-- Pharmacy node -->
+    <g class="ng" id="n-ph" onclick="sn('pharmacy')" style="cursor:pointer;">
+      <rect x="14" y="183" width="160" height="50" rx="10" stroke-width="0.5"
+        fill="var(--c-teal-fill)" stroke="var(--c-teal-stroke)"/>
+      <text x="94" y="204" text-anchor="middle" dominant-baseline="central"
+        font-size="14" font-weight="500" fill="var(--c-teal-text)">Pharmacy</text>
+      <text x="94" y="221" text-anchor="middle" dominant-baseline="central"
+        font-size="12" fill="var(--c-teal-stroke)">SA · community · indie</text>
+    </g>
+
+    <!-- McKesson node (larger, center) -->
+    <g class="ng" id="n-mc" onclick="sn('mck')" style="cursor:pointer;">
+      <rect x="250" y="172" width="180" height="72" rx="12" stroke-width="1.5"
+        fill="var(--c-blue-fill)" stroke="var(--c-blue-stroke)"/>
+      <text x="340" y="198" text-anchor="middle" dominant-baseline="central"
+        font-size="15" font-weight="600" fill="var(--c-blue-text)">McKesson</text>
+      <text x="340" y="216" text-anchor="middle" dominant-baseline="central"
+        font-size="12" fill="var(--c-blue-stroke)">Wholesale distributor</text>
+      <text x="340" y="232" text-anchor="middle" dominant-baseline="central"
+        font-size="11" fill="var(--c-blue-stroke)" font-style="italic">the intermediary</text>
+    </g>
+
+    <!-- Manufacturer node -->
+    <g class="ng" id="n-mf" onclick="sn('mfr')" style="cursor:pointer;">
+      <rect x="508" y="183" width="160" height="50" rx="10" stroke-width="0.5"
+        fill="var(--c-coral-fill)" stroke="var(--c-coral-stroke)"/>
+      <text x="588" y="204" text-anchor="middle" dominant-baseline="central"
+        font-size="14" font-weight="500" fill="var(--c-coral-text)">Manufacturer</text>
+      <text x="588" y="221" text-anchor="middle" dominant-baseline="central"
+        font-size="12" fill="var(--c-coral-stroke)">Teva · Pfizer · Lilly</text>
+    </g>
+
+    <!-- GPO node -->
+    <g class="ng" id="n-gp" onclick="sn('gpo')" style="cursor:pointer;">
+      <rect x="252" y="28" width="176" height="44" rx="10" stroke-width="0.5"
+        fill="var(--c-amber-fill)" stroke="var(--c-amber-stroke)"/>
+      <text x="340" y="46" text-anchor="middle" dominant-baseline="central"
+        font-size="14" font-weight="500" fill="var(--c-amber-text)">GPO</text>
+      <text x="340" y="62" text-anchor="middle" dominant-baseline="central"
+        font-size="12" fill="var(--c-amber-stroke)">Group purchasing org</text>
+    </g>
+
+    <!-- PBM node -->
+    <g class="ng" id="n-pb" onclick="sn('pbm')" style="cursor:pointer;">
+      <rect x="252" y="350" width="176" height="44" rx="10" stroke-width="0.5"
+        fill="var(--c-purple-fill)" stroke="var(--c-purple-stroke)"/>
+      <text x="340" y="368" text-anchor="middle" dominant-baseline="central"
+        font-size="14" font-weight="500" fill="var(--c-purple-text)">PBM / Payer</text>
+      <text x="340" y="384" text-anchor="middle" dominant-baseline="central"
+        font-size="12" fill="var(--c-purple-stroke)">CVS · ESI · OptumRx</text>
+    </g>
+
+    <!-- Regulator node -->
+    <g class="ng" id="n-rg" onclick="sn('reg')" style="cursor:pointer;">
+      <rect x="14" y="350" width="160" height="44" rx="10" stroke-width="0.5"
+        fill="var(--c-gray-fill)" stroke="var(--c-gray-stroke)"/>
+      <text x="94" y="368" text-anchor="middle" dominant-baseline="central"
+        font-size="14" font-weight="500" fill="var(--c-gray-text)">FDA / DEA</text>
+      <text x="94" y="384" text-anchor="middle" dominant-baseline="central"
+        font-size="12" fill="var(--c-gray-stroke)">DSCSA traceability</text>
+    </g>
+
+    </svg>
+    </div>
+
+    <div class="info-box" id="inf">Click any player above to see their role in the supply chain.</div>
+
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#1D9E75;"></div>Order &amp; payment flows</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#D85A30;"></div>Chargeback cycle</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#BA7517;"></div>Contracting / compliance</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#7F77DD;"></div>Data relay</div>
+      <div class="leg-item" style="margin-left:auto;font-style:italic;font-size:11px;">― ― dashed = indirect / periodic flow</div>
+    </div>
+  </div>
+
+  <!-- EDI Transaction Reference -->
+  <div class="card">
+    <p class="section-label">EDI transaction reference</p>
+    <table class="edi-table">
+      <thead>
+        <tr>
+          <th>Transaction</th>
+          <th>Name</th>
+          <th>Direction</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill p-teal">850</span></td>
+          <td>Purchase Order</td>
+          <td>Pharmacy → McKesson</td>
+          <td>The order itself. Every downstream transaction references this PO number.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-teal">855</span></td>
+          <td>PO Acknowledgment</td>
+          <td>McKesson → Pharmacy</td>
+          <td>Line-level accept / modify / reject. IA = accepted. IB = changed. IR = rejected.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-teal">856</span></td>
+          <td>Advance Ship Notice</td>
+          <td>McKesson → Pharmacy</td>
+          <td>Carton-level detail including lot numbers and expiry dates. DSCSA required.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-teal">810</span></td>
+          <td>Invoice</td>
+          <td>McKesson → Pharmacy</td>
+          <td>What you owe. Price vs. contract rate delta here triggers the 844 chargeback.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-teal">820</span></td>
+          <td>Payment Remittance</td>
+          <td>Pharmacy → McKesson</td>
+          <td>Net payment with adjustments applied. Closes the financial loop on the 810.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-coral">844</span></td>
+          <td>Chargeback Claim</td>
+          <td>McKesson → Manufacturer</td>
+          <td>Filed by McKesson on pharmacy's behalf. Claims the WAC-vs-contract price delta.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-coral">849</span></td>
+          <td>Chargeback Response</td>
+          <td>Manufacturer → McKesson</td>
+          <td>Accept or deny. Denial triggers dispute. Filing window misses are common.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-coral">867</span></td>
+          <td>Resale Report</td>
+          <td>McKesson → Manufacturer</td>
+          <td>Actual dispensed quantities. Validates 844 claims. Feeds manufacturer market share data.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Chargeback mechanics callout -->
+  <div class="card">
+    <p class="section-label">Why McKesson's intermediary role matters for chargebacks</p>
+    <p style="font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:16px;">
+      A pharmacy does not file chargeback claims. McKesson aggregates claims across its entire pharmacy network and submits batched 844 transactions to manufacturers. This means:
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+      <div style="padding:16px;background:var(--surface2);border-radius:12px;">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.04em;">SCALE ADVANTAGE</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.6;">Manufacturers receive one batched file per distributor, not millions of individual pharmacy claims.</div>
+      </div>
+      <div style="padding:16px;background:var(--surface2);border-radius:12px;">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.04em;">DEPENDENCY RISK</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.6;">One McKesson submission error or missed window affects every pharmacy in that batch — not just one.</div>
+      </div>
+      <div style="padding:16px;background:var(--surface2);border-radius:12px;">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.04em;">867 AS EVIDENCE</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.6;">The 867 resale data McKesson sends is what manufacturers use to validate the 844 quantities. Mismatch = denial.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Pharmacy EDI Player Map · McKesson SCS · 2026
+  </div>
+
+</div>
+
+<script>
+var INFO = {
+  pharmacy: '<b>Pharmacy</b> — the buyer. Sends 850 POs to McKesson and 820 payment remittances at settlement. Receives 855 acknowledgments, 856 ship notices, and 810 invoices back. Does not file chargebacks to manufacturers directly — McKesson batches and submits 844 claims on behalf of all pharmacy customers. Three segments: Strategic Accounts (Kinney, Wegmans), community chains, and independents.',
+  mck: '<b>McKesson</b> — the intermediary. Every other player connects through it. Aggregates POs from pharmacies, manages fulfillment, invoices via 810. Critically: batches 844 chargeback claims to manufacturers on behalf of all pharmacy customers. Manufacturer credits flow back through McKesson before reaching the pharmacy. This structural position makes McKesson\'s chargeback operations consequential — one submission error affects many pharmacies simultaneously.',
+  mfr: '<b>Manufacturer</b> — the contract source and chargeback payor. Sets WAC (wholesale acquisition cost) and negotiates contracts with GPOs and large accounts. Receives batched 844 chargeback claims from McKesson, responds via 849 (accepted or denied). Uses 867 resale data to validate that claimed volumes match actual dispensing — a volume mismatch between 844 and 867 is one of the most common denial triggers.',
+  gpo: '<b>GPO (Group Purchasing Organization)</b> — the contract negotiator. Examples: Intalere, Vizient, Elevance Health\'s PharMerica. Aggregates member pharmacy purchasing power to negotiate better contract prices from manufacturers. Those contract terms enter McKesson\'s pricing engine. When a pharmacy buys under a GPO contract, the delta between what McKesson charged (WAC) and the GPO contract price is the chargeback amount — filed by McKesson, not the pharmacy.',
+  pbm: '<b>PBM / Payer</b> — the formulary and rebate layer. CVS Caremark, Express Scripts, OptumRx. Determines which drugs are covered, at what tier, and negotiates manufacturer rebates for formulary placement. Not in the direct EDI ordering loop but its formulary decisions shape which drugs get ordered at all. McKesson\'s 867 resale data ultimately informs rebate calculations — a separate but parallel financial flow to the chargeback cycle.',
+  reg: '<b>FDA / DEA / DSCSA</b> — the compliance layer. The Drug Supply Chain Security Act (2013, fully enforced 2023) requires electronic lot-level traceability from manufacturer to pharmacy for every prescription drug. The lot numbers and expiration dates in the 856 ASN are a DSCSA requirement. McKesson must maintain a complete chain-of-custody record. DSCSA compliance is also a traceability evidence source for chargeback disputes.'
+};
+
+function sf(t, el) {
+  ['fa','fo','fc','fk'].forEach(function(id) {
+    var b = document.getElementById(id);
+    if (b) b.classList.remove('on');
+  });
+  el.classList.add('on');
+  document.querySelectorAll('.fl').forEach(function(f) {
+    if (t === 'all') { f.classList.remove('off'); }
+    else { f.classList.toggle('off', !f.classList.contains(t + '-f')); }
+  });
+}
+
+function sn(id) {
+  var el = document.getElementById('inf');
+  if (INFO[id]) {
+    el.innerHTML = INFO[id];
+    el.classList.add('active');
+  }
+}
+</script>
+</body>
+</html>

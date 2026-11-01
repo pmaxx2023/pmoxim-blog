@@ -1,0 +1,744 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+
+const personas = [
+  'A family with kids ages 8 to 12 who play on weekends',
+  'A strategy hobbyist in their 30s who loves heavy euro games',
+  'A party gamer in their 20s who wants quick, social rounds',
+  'A classic games fan in their 60s who plays chess and backgammon',
+  'A middle school teacher looking for classroom games',
+];
+
+const examples = [
+  'A strategic territory game inspired by ancient Rome',
+  'A fast racing game for kids with a river theme',
+  'A two-player sowing game about planting a garden',
+  'A tense cat-and-mouse chase on a cross-shaped board',
+];
+---
+
+<Base title="Gameo | pmoxim" description="Gameo designs original, playable board games from a one-line idea, grounded in R.C. Bell's taxonomy of traditional games.">
+  <section class="wrap page-head">
+    <p class="eyebrow">Prototype · Games</p>
+    <h1 class="page-title">Game<em>o.</em></h1>
+    <p class="lede">Describe a game in one line. Gameo designs a complete, playable board game, draws the board, and asks players what they think.</p>
+  </section>
+
+  <section class="wrap gameo">
+    <form id="gameo-form" class="panel form" novalidate>
+      <div class="field">
+        <label for="idea">Your game idea</label>
+        <textarea id="idea" name="idea" rows="3" maxlength="600" placeholder="A strategic territory game inspired by ancient Rome"></textarea>
+        <div class="chips" aria-label="Example ideas">
+          {examples.map((e) => <button type="button" class="chip example">{e}</button>)}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="players">Players</label>
+          <select id="players" name="players">
+            <option value="2">2</option>
+            <option value="2-4">2 to 4</option>
+            <option value="3-6">3 to 6</option>
+          </select>
+        </div>
+        <div class="field grow">
+          <label for="complexity">Complexity <span id="complexity-out">2</span> of 5</label>
+          <input id="complexity" name="complexity" type="range" min="1" max="5" value="2" />
+        </div>
+      </div>
+
+      <fieldset class="field">
+        <legend>Who should rate it</legend>
+        <div class="personas">
+          {personas.map((p, i) => (
+            <label class="persona">
+              <input type="checkbox" name="persona" value={p} checked={i < 3} />
+              <span>{p}</span>
+            </label>
+          ))}
+        </div>
+        <input id="custom-persona" type="text" maxlength="200" placeholder="Add your own player, for example: a retired engineer who loves puzzles" />
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="btn btn-primary" id="generate-btn">Design my game</button>
+        <span id="status" class="status" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+
+    <div id="result" class="result" hidden>
+      <article class="panel game">
+        <div class="game-head">
+          <div>
+            <p class="eyebrow" id="g-category"></p>
+            <h2 class="section-title" id="g-name"></h2>
+            <p class="tagline" id="g-tagline"></p>
+            <ul class="meta" id="g-meta"></ul>
+          </div>
+          <div class="board-wrap">
+            <svg id="board" viewBox="0 0 320 320" role="img" aria-label="Game board"></svg>
+            <p class="board-notes" id="g-board-notes"></p>
+          </div>
+        </div>
+
+        <div class="rules">
+          <section><h3>Components</h3><ul id="g-components"></ul></section>
+          <section><h3>Setup</h3><ol id="g-setup"></ol></section>
+          <section><h3>On your turn</h3><ol id="g-turn"></ol></section>
+          <section><h3>Movement</h3><p id="g-movement"></p></section>
+          <section><h3>Capture and interaction</h3><p id="g-capture"></p></section>
+          <section><h3>How to win</h3><p id="g-victory"></p></section>
+          <section><h3>Variants</h3><ul id="g-variants"></ul></section>
+          <section><h3>Roots</h3><p id="g-bell"></p></section>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="evaluate-btn">Ask the players</button>
+          <button type="button" class="btn" id="save-btn">Save to my library</button>
+          <button type="button" class="btn" id="copy-btn">Copy the rules</button>
+          <span id="game-status" class="status" role="status" aria-live="polite"></span>
+        </div>
+      </article>
+
+      <section id="evaluation" class="panel evaluation" hidden>
+        <div class="eval-head">
+          <h2 class="section-title">What players said</h2>
+          <p class="avg">Average <strong id="avg-score">–</strong> <span>of 5</span></p>
+        </div>
+        <p class="method">Each player writes a short reaction. The score comes from how close that reaction sits to five reference statements, from "I would never play this" to "I would play this again and again". No one is asked for a number.</p>
+        <div id="eval-list" class="eval-list"></div>
+      </section>
+    </div>
+
+    <section class="library" aria-labelledby="library-title">
+      <h2 class="section-title" id="library-title">My library</h2>
+      <p id="library-empty" class="muted">Games you save show up here. They stay in this browser.</p>
+      <ul id="library-list" class="library-list"></ul>
+    </section>
+  </section>
+</Base>
+
+<style is:global>
+  .gameo {
+    display: grid;
+    gap: 24px;
+  }
+  .form {
+    padding: 28px;
+    display: grid;
+    gap: 22px;
+  }
+  .field {
+    display: grid;
+    gap: 8px;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  .field label,
+  .field legend {
+    font-weight: 600;
+    font-size: 15px;
+    padding: 0;
+  }
+  textarea,
+  select,
+  input[type='text'] {
+    width: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font: inherit;
+    font-size: 16px;
+  }
+  textarea:focus,
+  select:focus,
+  input[type='text']:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  input[type='range'] {
+    accent-color: var(--accent);
+    width: 100%;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+  }
+  .row .field {
+    min-width: 160px;
+  }
+  .grow {
+    flex: 1;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .chip:hover {
+    color: var(--ink);
+    border-color: var(--accent);
+  }
+  .personas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .persona {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-weight: 400 !important;
+    font-size: 15px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .persona input {
+    margin-top: 4px;
+    accent-color: var(--accent);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  .status {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .status.error {
+    color: #e98a7a;
+  }
+  .result {
+    display: grid;
+    gap: 24px;
+  }
+  .game {
+    padding: 28px;
+    display: grid;
+    gap: 28px;
+  }
+  .game-head {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 28px;
+    align-items: start;
+  }
+  .game-head .section-title {
+    margin-bottom: 8px;
+  }
+  .tagline {
+    margin: 0 0 16px;
+    font-size: 19px;
+    color: var(--muted);
+  }
+  .meta {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .meta li {
+    font-size: 13px;
+    color: #b6bfd0;
+    background: #1a2440;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .board-wrap svg {
+    width: 100%;
+    height: auto;
+    background: #f4efe4;
+    border-radius: 12px;
+  }
+  .board-notes {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .rules {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px 32px;
+  }
+  .rules h3 {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+  .rules p,
+  .rules li {
+    font-size: 15px;
+    color: #c9d0de;
+    margin: 0 0 6px;
+  }
+  .rules ul,
+  .rules ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+  .rules ul {
+    list-style: disc;
+  }
+  .rules ol {
+    list-style: decimal;
+  }
+  .evaluation {
+    padding: 28px;
+  }
+  .eval-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .avg {
+    margin: 0;
+    color: var(--muted);
+  }
+  .avg strong {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 44px;
+    color: var(--ink);
+  }
+  .method {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 70ch;
+    margin: 4px 0 20px;
+  }
+  .eval-list {
+    display: grid;
+    gap: 14px;
+  }
+  .eval {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 20px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+  }
+  .eval .who {
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .eval .said {
+    margin: 0;
+    color: #c9d0de;
+    font-size: 15px;
+  }
+  .bars {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+  }
+  .bar {
+    display: grid;
+    grid-template-columns: 14px 1fr 36px;
+    gap: 8px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .bar .track {
+    display: block;
+    height: 8px;
+    background: #1a2440;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar .fill {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+  }
+  .score {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    color: var(--ink);
+    margin: 0 0 6px;
+  }
+  .library {
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .library-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .library-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .library-list button {
+    background: none;
+    border: 0;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    padding: 0;
+  }
+  .library-list .open strong {
+    display: block;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 22px;
+  }
+  .library-list .open span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .library-list .remove {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .library-list .remove:hover {
+    color: #e98a7a;
+  }
+  @media (max-width: 760px) {
+    .game-head,
+    .eval {
+      grid-template-columns: 1fr;
+    }
+    .form,
+    .game,
+    .evaluation {
+      padding: 20px;
+    }
+  }
+</style>
+
+<script>
+  type Game = {
+    name: string; tagline: string; category: string; topology: string;
+    board: { size: number; notes: string }; players: string; playTime: string; complexity: number;
+    components: string[]; setup: string[]; turn: string[]; movement: string; capture: string;
+    victory: string; variants: string[]; bellNote: string;
+  };
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const form = $<HTMLFormElement>('gameo-form');
+  const idea = $<HTMLTextAreaElement>('idea');
+  const complexity = $<HTMLInputElement>('complexity');
+  const status = $('status');
+  const generateBtn = $<HTMLButtonElement>('generate-btn');
+  let current: Game | null = null;
+
+  complexity.addEventListener('input', () => ($('complexity-out').textContent = complexity.value));
+  document.querySelectorAll<HTMLButtonElement>('.example').forEach((b) =>
+    b.addEventListener('click', () => {
+      idea.value = b.textContent ?? '';
+      idea.focus();
+    }),
+  );
+
+  function selectedPersonas(): string[] {
+    const list = [...document.querySelectorAll<HTMLInputElement>('input[name="persona"]:checked')].map((i) => i.value);
+    const custom = ($<HTMLInputElement>('custom-persona').value || '').trim();
+    if (custom) list.push(custom);
+    return list.slice(0, 5);
+  }
+
+  function setStatus(el: HTMLElement, text: string, isError = false) {
+    el.textContent = text;
+    el.classList.toggle('error', isError);
+  }
+
+  function fillList(id: string, items: string[]) {
+    const el = $(id);
+    el.replaceChildren(...items.map((t) => Object.assign(document.createElement('li'), { textContent: t })));
+  }
+
+  // ---------- Board drawing ----------
+  const NS = 'http://www.w3.org/2000/svg';
+  const INK = '#2b2a33';
+  const ACCENT = '#d9902a';
+  const PAPER_DARK = '#e6dcc6';
+
+  function el(tag: string, attrs: Record<string, string | number>) {
+    const node = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, String(v));
+    return node;
+  }
+
+  function drawBoard(game: Game) {
+    const svg = $<HTMLElement>('board') as unknown as SVGSVGElement;
+    svg.replaceChildren();
+    const n = game.board.size;
+    const add = (node: Element) => svg.appendChild(node);
+    const stroke = { stroke: INK, 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+
+    if (game.topology === 'grid') {
+      const pad = 24, cell = (320 - pad * 2) / n;
+      for (let r = 0; r < n; r++)
+        for (let c = 0; c < n; c++)
+          add(el('rect', { x: pad + c * cell, y: pad + r * cell, width: cell, height: cell, fill: (r + c) % 2 ? PAPER_DARK : 'transparent', stroke: INK, 'stroke-width': 1.5 }));
+      add(el('rect', { x: pad, y: pad, width: cell * n, height: cell * n, ...stroke, 'stroke-width': 3 }));
+    } else if (game.topology === 'concentric') {
+      const c = 160;
+      const points: [number, number][] = [];
+      for (let i = 0; i < n; i++) {
+        const half = 130 - i * (100 / n);
+        add(el('rect', { x: c - half, y: c - half, width: half * 2, height: half * 2, ...stroke }));
+        for (const [dx, dy] of [[-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]]) points.push([c + dx * half, c + dy * half]);
+      }
+      const outer = 130, inner = 130 - (n - 1) * (100 / n);
+      for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]])
+        add(el('line', { x1: c + dx * outer, y1: c + dy * outer, x2: c + dx * inner, y2: c + dy * inner, ...stroke }));
+      for (const [x, y] of points) add(el('circle', { cx: x, cy: y, r: 6, fill: '#f4efe4', stroke: INK, 'stroke-width': 2 }));
+    } else if (game.topology === 'track') {
+      const cx = 160, cy = 160, rx = 125, ry = 110;
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+        const x = cx + rx * Math.cos(a), y = cy + ry * Math.sin(a);
+        add(el('circle', { cx: x, cy: y, r: Math.max(5, Math.min(11, 300 / n)), fill: i === 0 ? ACCENT : i % 5 === 0 ? PAPER_DARK : '#f4efe4', stroke: INK, 'stroke-width': 1.8 }));
+      }
+      const label = el('text', { x: cx, y: cy - ry + 30, 'text-anchor': 'middle', 'font-size': 12, fill: INK, 'font-family': 'IBM Plex Mono, monospace' });
+      label.textContent = 'START';
+      add(label);
+      add(el('ellipse', { cx, cy, rx: rx - 40, ry: ry - 40, ...stroke, 'stroke-dasharray': '4 6', 'stroke-width': 1.5 }));
+    } else if (game.topology === 'pits') {
+      const pad = 54, w = 320 - pad * 2, step = w / n, r = Math.min(step / 2 - 4, 18);
+      add(el('rect', { x: 10, y: 80, width: 300, height: 160, rx: 70, fill: PAPER_DARK, stroke: INK, 'stroke-width': 2.5 }));
+      for (const y of [125, 195]) for (let i = 0; i < n; i++) add(el('circle', { cx: pad + step * (i + 0.5), cy: y, r, fill: '#f4efe4', stroke: INK, 'stroke-width': 2 }));
+      add(el('ellipse', { cx: 32, cy: 160, rx: 16, ry: 52, fill: '#f4efe4', stroke: INK, 'stroke-width': 2 }));
+      add(el('ellipse', { cx: 288, cy: 160, rx: 16, ry: 52, fill: '#f4efe4', stroke: INK, 'stroke-width': 2 }));
+    } else {
+      const arm = n, span = arm * 2 + 1, cell = 272 / span, pad = (320 - cell * span) / 2;
+      for (let r = 0; r < span; r++)
+        for (let c = 0; c < span; c++) {
+          const inCross = Math.abs(r - arm) <= 1 || Math.abs(c - arm) <= 1;
+          if (!inCross) continue;
+          const center = r === arm && c === arm;
+          add(el('rect', { x: pad + c * cell, y: pad + r * cell, width: cell, height: cell, fill: center ? ACCENT : (r + c) % 2 ? PAPER_DARK : '#f4efe4', stroke: INK, 'stroke-width': 1.6 }));
+        }
+    }
+    svg.setAttribute('aria-label', `${game.topology} board for ${game.name}`);
+  }
+
+  // ---------- Rendering ----------
+  function showGame(game: Game) {
+    current = game;
+    $('g-category').textContent = `${game.category} game · ${game.topology} board`;
+    $('g-name').textContent = game.name;
+    $('g-tagline').textContent = game.tagline;
+    fillList('g-meta', [`${game.players} players`, game.playTime, `Complexity ${game.complexity} of 5`].filter(Boolean));
+    $('g-board-notes').textContent = game.board.notes;
+    fillList('g-components', game.components);
+    fillList('g-setup', game.setup);
+    fillList('g-turn', game.turn);
+    $('g-movement').textContent = game.movement;
+    $('g-capture').textContent = game.capture;
+    $('g-victory').textContent = game.victory;
+    fillList('g-variants', game.variants);
+    $('g-bell').textContent = game.bellNote;
+    drawBoard(game);
+    $('evaluation').hidden = true;
+    $('result').hidden = false;
+    setStatus($('game-status'), '');
+    $('result').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = idea.value.trim();
+    if (text.length < 3) {
+      setStatus(status, 'Describe your game in a few words first.', true);
+      idea.focus();
+      return;
+    }
+    generateBtn.disabled = true;
+    setStatus(status, 'Designing your game. This takes about 20 seconds.');
+    try {
+      const res = await fetch('/api/gameo/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idea: text, players: $<HTMLSelectElement>('players').value, complexity: Number(complexity.value), audience: selectedPersonas() }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.game) throw new Error(data.error || 'Something went wrong.');
+      showGame(data.game);
+      setStatus(status, '');
+    } catch (err) {
+      setStatus(status, (err as Error).message || 'Something went wrong. Try again.', true);
+    } finally {
+      generateBtn.disabled = false;
+    }
+  });
+
+  $('evaluate-btn').addEventListener('click', async () => {
+    if (!current) return;
+    const personas = selectedPersonas();
+    const gs = $('game-status');
+    if (!personas.length) {
+      setStatus(gs, 'Pick at least one player above.', true);
+      return;
+    }
+    const btn = $<HTMLButtonElement>('evaluate-btn');
+    btn.disabled = true;
+    setStatus(gs, `Asking ${personas.length} player${personas.length > 1 ? 's' : ''}…`);
+    try {
+      const res = await fetch('/api/gameo/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ game: current, personas }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.results) throw new Error(data.error || 'Something went wrong.');
+      $('avg-score').textContent = data.average.toFixed(1);
+      $('eval-list').replaceChildren(
+        ...data.results.map((r: any) => {
+          const row = document.createElement('div');
+          row.className = 'eval';
+          const left = document.createElement('div');
+          left.append(
+            Object.assign(document.createElement('p'), { className: 'who', textContent: r.persona }),
+            Object.assign(document.createElement('p'), { className: 'said', textContent: `“${r.rationale}”` }),
+          );
+          const right = document.createElement('div');
+          right.append(Object.assign(document.createElement('p'), { className: 'score', textContent: `${r.expected.toFixed(1)} of 5` }));
+          const bars = document.createElement('div');
+          bars.className = 'bars';
+          for (const k of [5, 4, 3, 2, 1]) {
+            const p = r.distribution[k] ?? 0;
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.innerHTML = `<span>${k}</span><span class="track"><span class="fill" style="width:${(p * 100).toFixed(1)}%"></span></span><span>${Math.round(p * 100)}%</span>`;
+            bars.append(bar);
+          }
+          right.append(bars);
+          row.append(left, right);
+          return row;
+        }),
+      );
+      $('evaluation').hidden = false;
+      setStatus(gs, '');
+      $('evaluation').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (err) {
+      setStatus(gs, (err as Error).message || 'Something went wrong. Try again.', true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('copy-btn').addEventListener('click', async () => {
+    if (!current) return;
+    const g = current;
+    const text = [
+      g.name, g.tagline, '',
+      `${g.players} players · ${g.playTime} · Complexity ${g.complexity}/5 · ${g.topology} board`, '',
+      'Components:', ...g.components.map((c) => `- ${c}`), '',
+      'Setup:', ...g.setup.map((s, i) => `${i + 1}. ${s}`), '',
+      'On your turn:', ...g.turn.map((s, i) => `${i + 1}. ${s}`), '',
+      `Movement: ${g.movement}`, `Capture: ${g.capture}`, `How to win: ${g.victory}`, '',
+      'Variants:', ...g.variants.map((v) => `- ${v}`), '', g.bellNote, '', 'Designed with Gameo · pmoxim.com/gameo',
+    ].join('\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus($('game-status'), 'Rules copied.');
+    } catch {
+      setStatus($('game-status'), 'Copy is blocked in this browser.', true);
+    }
+  });
+
+  // ---------- Library ----------
+  const KEY = 'gameo-library-v1';
+  function loadLibrary(): Game[] {
+    try {
+      return JSON.parse(localStorage.getItem(KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+  function saveLibrary(list: Game[]) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(list.slice(0, 50)));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  function renderLibrary() {
+    const list = loadLibrary();
+    $('library-empty').hidden = list.length > 0;
+    $('library-list').replaceChildren(
+      ...list.map((g, i) => {
+        const li = document.createElement('li');
+        const open = document.createElement('button');
+        open.className = 'open';
+        open.type = 'button';
+        open.innerHTML = `<strong></strong><span></span>`;
+        (open.querySelector('strong') as HTMLElement).textContent = g.name;
+        (open.querySelector('span') as HTMLElement).textContent = `${g.topology} board · ${g.players} players`;
+        open.addEventListener('click', () => showGame(g));
+        const remove = document.createElement('button');
+        remove.className = 'remove';
+        remove.type = 'button';
+        remove.textContent = 'Remove';
+        remove.setAttribute('aria-label', `Remove ${g.name}`);
+        remove.addEventListener('click', () => {
+          const next = loadLibrary();
+          next.splice(i, 1);
+          saveLibrary(next);
+          renderLibrary();
+        });
+        li.append(open, remove);
+        return li;
+      }),
+    );
+  }
+  $('save-btn').addEventListener('click', () => {
+    if (!current) return;
+    const list = loadLibrary().filter((g) => g.name !== current!.name);
+    list.unshift(current);
+    const ok = saveLibrary(list);
+    setStatus($('game-status'), ok ? 'Saved to your library.' : 'This browser blocks saving.', !ok);
+    renderLibrary();
+  });
+  renderLibrary();
+</script>

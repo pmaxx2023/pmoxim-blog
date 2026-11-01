@@ -1,10 +1,8 @@
 import type { APIRoute } from 'astro';
-import { checkGuard, gatewayToken, json, openAiError } from '../../../../lib/sci-guard';
+import { checkGuard, json, openAiError } from '../../../../lib/sci-guard';
+import { embed } from '../../../../lib/gateway-embed';
 
 export const prerender = false;
-
-// Gateway embedding models to try, in order.
-const MODELS = ['openai/text-embedding-3-small', 'openai/text-embedding-3-large', 'google/gemini-embedding-001'];
 
 export const POST: APIRoute = async ({ request }) => {
   const blocked = checkGuard(request);
@@ -22,28 +20,16 @@ export const POST: APIRoute = async ({ request }) => {
     return openAiError('input must be 1-20 strings of up to 4000 characters.', 400);
   }
 
-  const token = gatewayToken(request);
-  if (!token) return openAiError('Embedding service is not configured.', 500, 'server_error');
-
-  let lastError = '';
-  for (const model of MODELS) {
-    const res = await fetch('https://ai-gateway.vercel.sh/v1/embeddings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ model, input }),
+  try {
+    const { model, vectors, usage } = await embed(request, input);
+    return json({
+      object: 'list',
+      data: vectors.map((embedding, index) => ({ object: 'embedding', index, embedding })),
+      model,
+      usage,
     });
-    const text = await res.text();
-    if (res.ok) {
-      try {
-        const data = JSON.parse(text);
-        return json({ object: 'list', data: data.data, model: data.model ?? model, usage: data.usage ?? {} });
-      } catch {
-        lastError = 'Bad embedding response.';
-        continue;
-      }
-    }
-    lastError = `${model}: ${res.status} ${text.slice(0, 200)}`;
-    console.error('SCI embeddings failed', lastError);
+  } catch (error) {
+    console.error('SCI embeddings failed', error);
+    return openAiError(String((error as Error).message).slice(0, 300), 502, 'server_error');
   }
-  return openAiError(`Embedding failed. ${lastError}`, 502, 'server_error');
 };

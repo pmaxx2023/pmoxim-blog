@@ -29,13 +29,3 @@ export function checkGuard(request: Request): Response | null {
   hits.push(now);
   return null;
 }
-
-export function gatewayToken(request: Request): string | undefined {
-  return (
-    import.meta.env.AI_GATEWAY_API_KEY ??
-    process.env.AI_GATEWAY_API_KEY ??
-    request.headers.get('x-vercel-oidc-token') ??
-    process.env.VERCEL_OIDC_TOKEN ??
-    undefined
-  );
-}

@@ -86,3 +86,35 @@ export async function handleChat(request: Request, system: string, maxTokens: nu
     return json({ error: 'Internal server error', reason: 'network_error' }, 500);
   }
 }
+
+// One-shot text call for server routes that need a plain answer.
+export async function claudeText(opts: { system: string; prompt: string; model?: string; maxTokens?: number }): Promise<string> {
+  const apiKey = import.meta.env.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('API key not configured');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: opts.model ?? (import.meta.env.ANTHROPIC_MODEL ?? process.env.ANTHROPIC_MODEL ?? DEFAULT_MODEL),
+      max_tokens: opts.maxTokens ?? 1024,
+      system: opts.system,
+      messages: [{ role: 'user', content: opts.prompt }],
+    }),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok || !data) throw new Error(`Claude error ${res.status}: ${data?.error?.type ?? ''} ${data?.error?.message ?? ''}`.trim());
+  return (data.content ?? []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('').trim();
+}
+
+// Simple per-IP hourly limit for public routes.
+const limitBuckets: Map<string, number[]> = ((globalThis as any).__pmoximLimits ??= new Map());
+export function rateLimited(request: Request, key: string, perHour: number): boolean {
+  const ip = (request.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
+  const id = `${key}:${ip}`;
+  const now = Date.now();
+  const recent = (limitBuckets.get(id) ?? []).filter((t) => t > now - 3600_000);
+  if (recent.length >= perHour) return true;
+  recent.push(now);
+  limitBuckets.set(id, recent);
+  return false;
+}

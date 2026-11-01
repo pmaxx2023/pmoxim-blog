@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacy EDI</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f8f7f4; --surface: #ffffff; --surface2: #f1efe8;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --text: #1a1a18; --muted: #5f5e5a; --dim: #9c9a92;
+  --accent: #185FA5; --accent-light: #E6F1FB;
+  --sans: -apple-system,'Segoe UI',sans-serif;
+  --mono: 'SF Mono','Fira Code',monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#0d0f12;--surface:#141720;--surface2:#1c2030;
+    --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);
+    --text:#e2e8f0;--muted:#7a84a0;--dim:#4a5270;
+    --accent:#4f8ef7;--accent-light:#0C447C;
+  }
+}
+
+html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); }
+
+.page { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
+.eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.10em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+h1 { font-size: 26px; font-weight: 600; line-height: 1.2; margin-bottom: 8px; }
+h1 span { color: var(--accent); }
+.subtitle { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 32px; max-width: 620px; }
+
+.links { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card {
+  display: block; text-decoration: none; color: inherit;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px;
+  transition: border-color .15s;
+}
+.card:hover { border-color: var(--accent); }
+.card h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.card .go { display: inline-block; margin-top: 14px; font-size: 13px; font-weight: 500; color: var(--accent); }
+.tag {
+  display: inline-block; font-family: var(--mono); font-size: 10px; font-weight: 500;
+  padding: 2px 6px; border-radius: 99px; margin-bottom: 12px;
+  background: var(--accent-light); color: var(--accent); letter-spacing: 0.04em;
+}
+
+.footer { margin-top: 48px; font-size: 12px; color: var(--dim); text-align: center; }
+@media (max-width: 700px) { .links { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <p class="eyebrow">Pharmaceutical supply chain · EDI</p>
+  <h1>Pharmacy <span>EDI</span></h1>
+  <p class="subtitle">How orders, invoices, and chargebacks move between pharmacies, McKesson, manufacturers, and the rest of the supply chain.</p>
+
+  <div class="links">
+    <a class="card" href="pharmacy-edi-hub.html">
+      <span class="tag">3 tools</span>
+      <h2>Pharmacy EDI Hub</h2>
+      <p>Player map, a 9-step walk through the transaction flow, and an EDI 850 to JSON translator.</p>
+      <span class="go">Open the hub →</span>
+    </a>
+    <a class="card" href="pharmacy-edi-players.html">
+      <span class="tag">map</span>
+      <h2>Player map</h2>
+      <p>Who talks to whom and how. Click any player to see their role, or filter to one transaction flow.</p>
+      <span class="go">Open the map →</span>
+    </a>
+  </div>
+
+  <div class="footer">
+    Pharmacy EDI · McKesson SCS · 2026
+  </div>
+
+</div>
+</body>
+</html>
