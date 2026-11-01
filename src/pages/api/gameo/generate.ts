@@ -43,8 +43,29 @@ Call the design_game tool with the full design. Board size means: grid = squares
 Use plain words. Keep each string under 240 characters.`;
 
 function clean(game: any) {
-  const str = (v: unknown, n = 240) => (typeof v === 'string' ? v.slice(0, n) : '');
-  const list = (v: unknown, max: number) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string').slice(0, max).map((x) => x.slice(0, 240)) : []);
+  // Models sometimes wrap a sentence in a list or a JSON-looking string.
+  const flat = (v: unknown): string => {
+    if (Array.isArray(v)) return v.filter((x) => typeof x === 'string').join(' ');
+    if (typeof v !== 'string') return '';
+    const t = v.trim();
+    if (t.startsWith('[') && t.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(t);
+        if (Array.isArray(parsed)) return parsed.filter((x) => typeof x === 'string').join(' ');
+      } catch {
+        // not JSON; keep as text
+      }
+    }
+    return t;
+  };
+  const str = (v: unknown, n = 400) => flat(v).slice(0, n);
+  const list = (v: unknown, max: number) => {
+    let arr = v;
+    if (typeof v === 'string') {
+      try { arr = JSON.parse(v); } catch { arr = [v]; }
+    }
+    return Array.isArray(arr) ? arr.filter((x) => typeof x === 'string').slice(0, max).map((x) => x.slice(0, 300)) : [];
+  };
   const topology = TOPOLOGIES.includes(game?.topology) ? game.topology : 'grid';
   const limits: Record<string, [number, number]> = { grid: [5, 11], concentric: [2, 4], track: [16, 60], pits: [4, 8], cruciform: [2, 5] };
   const [lo, hi] = limits[topology];
