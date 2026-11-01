@@ -41,8 +41,8 @@ export const groups: PrototypeGroup[] = [
         title: 'PharmIntel',
         description: 'A drug distribution news and intelligence dashboard. It tracks 12 topics and refreshes every four hours.',
         tags: ['Pharmacy', 'React', 'Claude API'],
-        status: 'Code',
-        href: 'https://github.com/pmaxx2023/pharmintel',
+        status: 'Live',
+        href: 'https://pharmintel.vercel.app',
       },
       {
         title: 'Pharmacy EDI Hub',
@@ -95,9 +95,9 @@ export const groups: PrototypeGroup[] = [
       {
         title: 'Ralph Multiplayer',
         description: 'A shared product spec editor. Several people edit at once while AI agents work the stories and post progress.',
-        tags: ['Yjs', 'Hono', 'Agents'],
-        status: 'Code',
-        href: 'https://github.com/pmaxx2023/ralph-multiplayer',
+        tags: ['Hono', 'React', 'Agents'],
+        status: 'Live',
+        href: 'https://ralph-multiplayer.vercel.app',
       },
     ],
   },
