@@ -42,7 +42,7 @@ export const POST: APIRoute = async ({ request }) => {
   const data = await res.json().catch(() => null);
   if (!res.ok || !data) {
     console.error('SCI chat failed', res.status, JSON.stringify(data)?.slice(0, 300));
-    return openAiError('Completion failed.', 502, 'server_error');
+    return openAiError(`Completion failed: ${data?.error?.type ?? res.status} ${String(data?.error?.message ?? '').slice(0, 160)}`, 502, 'server_error');
   }
 
   const content = (data.content ?? [])
