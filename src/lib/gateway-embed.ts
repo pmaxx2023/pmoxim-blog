@@ -19,7 +19,7 @@ export async function embed(request: Request, input: string[]): Promise<{ model:
   const token = gatewayToken(request);
   if (!token) throw new Error('Embedding service is not configured.');
   const order = workingModel ? [workingModel, ...MODELS.filter((m) => m !== workingModel)] : MODELS;
-  let lastError = '';
+  const errors: string[] = [];
   for (const model of order) {
     const res = await fetch('https://ai-gateway.vercel.sh/v1/embeddings', {
       method: 'POST',
@@ -33,13 +33,13 @@ export async function embed(request: Request, input: string[]): Promise<{ model:
         workingModel = model;
         return { model: data.model ?? model, vectors: data.data.map((d: any) => d.embedding), usage: data.usage ?? {} };
       } catch {
-        lastError = 'Bad embedding response.';
+        errors.push(`${model}: bad response`);
         continue;
       }
     }
-    lastError = `${model}: ${res.status} ${text.slice(0, 200)}`;
+    errors.push(`${model}: ${res.status} ${text.slice(0, 160)}`);
   }
-  throw new Error(`Embedding failed. ${lastError}`);
+  throw new Error(`Embedding failed. ${errors.join(' || ')}`);
 }
 
 export function cosine(a: number[], b: number[]): number {
