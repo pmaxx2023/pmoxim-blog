@@ -119,7 +119,7 @@ export function rateLimited(request: Request, key: string, perHour: number): boo
   return false;
 }
 
-// Structured output: force a single tool call and return its input object.
+// Structured output: offer a single tool and return its input object.
 export async function claudeObject(opts: {
   system: string;
   prompt: string;
@@ -139,7 +139,9 @@ export async function claudeObject(opts: {
       max_tokens: opts.maxTokens ?? 3000,
       system: opts.system,
       tools: [{ name: opts.toolName, description: opts.description, input_schema: opts.schema }],
-      tool_choice: { type: 'tool', name: opts.toolName },
+      // Newer models reject forced tool_choice; with one tool and a clear
+      // instruction they call it on their own.
+      tool_choice: { type: 'auto' },
       messages: [{ role: 'user', content: opts.prompt }],
     }),
   });
